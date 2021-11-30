@@ -1,6 +1,8 @@
 import json
 import logging
 import re
+
+from pkgs._utils import safe_quote_string
 from ._az_cli import az_cli
 from ._exceptions import AzCommandError
 
@@ -73,7 +75,7 @@ class ArcVMwareResources(object):
             '--fqdn', f'"{fqdn}"',
             '--port', f'"{port}"',
             '--username', f'"{username}"',
-            '--password', f'"{password}"'
+            '--password', safe_quote_string(password)
         )
         res = json.loads(res)
         if err:

@@ -65,11 +65,9 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ConnectedVMwarevSphere'
         },
         {
-            'feature': 'Extensions',
             'namespace': 'Microsoft.KubernetesConfiguration'
         },
         {
-            'feature': 'CustomLocations-ppauto',
             'namespace': 'Microsoft.ExtendedLocation'
         },
         {

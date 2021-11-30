@@ -106,3 +106,15 @@ def create_dir_if_doesnot_exist(path: str):
         os.mkdir(path)
     except FileExistsError:
         pass
+
+def quote_string_for_cmd(ip: str):
+    return f'"{ip}"'
+
+def quote_string_for_bash(ip: str):
+    return f"'{ip}'"
+
+def safe_quote_string(ip:str):
+    if os.name=='nt':
+        return quote_string_for_cmd(ip)
+    else:
+        return quote_string_for_bash(ip)
