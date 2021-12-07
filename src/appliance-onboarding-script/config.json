@@ -1,0 +1,29 @@
+{
+	"location": "eastus",
+	"subscriptionId": "",
+	"resourceGroup": "",
+	"nameForApplianceInAzure": "",
+	"customLocationAzureName": "",
+	"nameForVCenterInAzure": "",
+	"applianceControlPlaneIpAddress": "",
+	"proxyDetails": {
+		"http": "",
+		"https": "",
+		"noProxy": "",
+		"certificateFilePath": ""
+	},
+	"downloadedOvaFilePath": "",
+	"vCenterFQDN": "",
+	"vCenterPort": "443",
+	"vCenterUserName": "",
+	"vCenterPassword": "",
+	"datacenterForApplianceVM": "",
+	"datastoreForApplianceVM": "",
+	"networkForApplianceVM": "",
+	"resourcePoolForApplianceVM": "",
+	"folderForApplianceVM": "",
+	"vmTemplateName": "",
+	"diskSizeGibForApplianceVM": 100,
+	"memoryMibForApplianceVM": 16384,
+	"numCpusForApplianceVM": 4
+}
