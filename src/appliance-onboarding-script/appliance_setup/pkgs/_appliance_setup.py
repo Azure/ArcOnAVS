@@ -230,6 +230,7 @@ class ApplianceSetup(object):
             if err:
                 raise AzCommandError('arcappliance create command failed.')
             res = json.loads(res)
+            logging.info("Successfully provisioned arcappliance arm resource.")
             return res['id']
 
     def _set_default_subscription(self):
