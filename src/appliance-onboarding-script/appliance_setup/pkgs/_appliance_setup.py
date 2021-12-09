@@ -61,7 +61,6 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ResourceConnector'
         },
         {
-            'feature': 'ConnectedVMwarePreview',
             'namespace': 'Microsoft.ConnectedVMwarevSphere'
         },
         {
