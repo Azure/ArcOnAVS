@@ -11,6 +11,6 @@
     "k8sNodeIPPoolEnd": "",
     "gatewayIPAddress": ""
   },
-  "register": false,
+  "register": true,
   "isAVS": true
 }

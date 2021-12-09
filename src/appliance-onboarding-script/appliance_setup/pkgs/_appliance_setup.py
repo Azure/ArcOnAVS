@@ -61,7 +61,6 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ResourceConnector'
         },
         {
-            'feature': 'ConnectedVMwarePreview',
             'namespace': 'Microsoft.ConnectedVMwarevSphere'
         },
         {
@@ -356,7 +355,8 @@ class ApplianceSetup(object):
         self._delete_keys_if_empty()
         self._copy_proxy_cert_update_config()
         config = self._config
-        config['vCenterAddress'] = config['vCenterFQDN'] + ':' + config['vCenterPort']
+        #TODO Remove workaround as soon as appliance is fixed
+        config['vCenterAddress'] = config['vCenterFQDN']
         appliance: dict = None
         infra: dict = None
         resource: dict = None

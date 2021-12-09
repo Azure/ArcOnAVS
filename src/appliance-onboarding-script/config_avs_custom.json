@@ -26,6 +26,6 @@
   },
   "resourcePoolForApplianceVM": "",
   "folderForApplianceVM": "",
-  "register": false,
+  "register": true,
   "isAVS": true
 }
