@@ -52,11 +52,9 @@ if __name__ == "__main__":
         format='%(asctime)s\t%(levelname)s\t%(message)s',
         level=logging.DEBUG,
         datefmt='%Y-%m-%dT%H:%M:%S')
-    is_avs = False
-    try:
-        is_avs = config['isAVS']
-    except KeyError:
-        pass
+    is_avs = config.get('isAVS', False)
+    is_static = config.get("isStatic", True)
+    is_register = config.get("register", True)
     if is_avs:
         logging.info("avs enabled")
         avs_config_validator = ConfigValidator(config)
@@ -76,14 +74,11 @@ if __name__ == "__main__":
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion("This feature is not available in this region. Please refer to this document for valid regions.")
 
-        # TODO: Remove the mandatory config called "register" after internal testing.
-        #  This condition allows testing with and without the register API call.
-
     if operation == 'onboard':
         if is_avs:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
-            if config["isStatic"]:
+            if is_static:
                 nsx_orchestrator: Orchestrator = NSXOrchestor(_customer_details,
                                                               dhcp_data_converter.convert_data(config),
                                                               segment_data_converter.convert_data(config))
@@ -93,7 +88,7 @@ if __name__ == "__main__":
                                                               segment_data_converter.convert_data(config))
             nsx_orchestrator.orchestrate()
             # TODO Move the DNS Helper out of the processor
-            if config["isStatic"]:
+            if is_static:
                 dns_helper = DNSHelper()
                 dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
                 config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
@@ -104,10 +99,10 @@ if __name__ == "__main__":
         env_setup.setup()
 
         vcenterId = appliance_setup.create()
-        if is_avs and config["register"]:
+        if is_avs and is_register:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'deboard':
-        if is_avs and config["register"]:
+        if is_avs and is_register:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)
         appliance_setup = ApplianceSetup(config, arc_vmware_res)
