@@ -53,8 +53,8 @@ if __name__ == "__main__":
         level=logging.DEBUG,
         datefmt='%Y-%m-%dT%H:%M:%S')
     is_avs = config.get('isAVS', False)
-    is_static = config.get("isStatic", True)
-    is_register = config.get("register", True)
+    is_static = config.get('isStatic', True)
+    is_register = config.get('register', True)
     if is_avs:
         logging.info("avs enabled")
         avs_config_validator = ConfigValidator(config)
