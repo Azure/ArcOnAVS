@@ -1,8 +1,6 @@
-# Helper script for Arc enabled AVS
+# Helper script for enabling ARC on Azure VMWare Solution
 
-This helper script is provided to help you simplify the onboarding to the preview of Arc enabled AVS. For more details, see [the private preview GitHub repo](https://github.com/Azure/ArcOnAVS)
-
-**Note**: The link takes you to a private GitHub repo to access which you will need to be signed into GitHub and be provided access to the repo.
+This helper script is provided to help you simplify the onboarding to the preview of ARC on Azure VMWare Solution.
 
 ## Prerequisites
 
@@ -39,7 +37,7 @@ Open a PowerShell window and run the following command. You will need to bypass 
 As with any script downloaded from the internet, do read its contents before running it.
 
 ```powershell
-	Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/deboard> -FilePath <path_to_config_avs.json>
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/deboard> -FilePath <path_to_config_avs.json>
 ```
 
 ### On a Linux machine
@@ -47,8 +45,8 @@ As with any script downloaded from the internet, do read its contents before run
 Use commands as follows:
 
 ```bash
-	sudo chmod +x run.sh 
-	sudo bash run.sh <onboard/deboard> <path_to_config_avs.json>
+sudo chmod +x run.sh 
+sudo bash run.sh <onboard/deboard> <path_to_config_avs.json>
 ```
 
 ## Commands Description
@@ -63,7 +61,7 @@ Onboard command does following:
 
 3. Installs ARC related azure-cli extensions
 
-4. Creates required NSX components such as segment if they don't exist already etc.
+4. Creates required NSX components(such as segment) if they don't exist already etc.
 
 3. Ensures all the required Azure resource providers are registered. Checks if all the required feature flags are enabled for the Azure subscription.
 
@@ -93,7 +91,7 @@ Deboard command does the following operations:
 
 3. Deletes Custom Location representing your VMWare vSphere environment.
 
-4. Deletes the `azure-vmwareoperator` cluster extension.
+4. Deletes the `azure-vmwareoperator` k8s cluster extension.
 
 5. Deletes ARM representation of appliance VM.
 
