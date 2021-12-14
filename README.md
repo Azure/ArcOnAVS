@@ -12,15 +12,15 @@ Ensure you meet all the prerequisites mentioned below:
 
 2. Internet access from jump box VM.
 
-3. Your Azure Subscription needs to get whitelisting for private preview Only. Resource group in the subscription where you have owner/contributor role. 
+3. Your Azure Subscription needs to get whitelisting for private preview. Resource group in the subscription where you have owner/contributor role.
 
-4. Have a minimum of 3 free non-overlapping IPs addresses.  
+4. Have a minimum of 3 free non-overlapping IPs addresses.
 
-5. Verify that your vCenter Server is 6.7 or above. 
+5. Verify that your vCenter Server is 6.7 or above.
 
-6. A resource pool with minimum free capacity of 16 GB of RAM, 4 vCPUs. 
+6. A resource pool with minimum free capacity of 16 GB of RAM, 4 vCPUs.
 
-7. A datastore with minimum 100 GB of free disk space that is available through the resource pool. 
+7. A datastore with minimum 100 GB of free disk space that is available through the resource pool.
 
 8. On the vCenter Server, allow inbound connections on TCP port 443, so that the Arc resource bridge and VMware cluster extension can communicate with the vCenter server.
 (As of today, only the default port of 443 is supported if you use a different port, Appliance VM creation will fail) 
@@ -63,7 +63,7 @@ Onboard command does following:
 
 3. Installs ARC related azure-cli extensions
 
-4. Creates requires NSX components such as segment if they don't exist already etc.
+4. Creates required NSX components such as segment if they don't exist already etc.
 
 3. Ensures all the required Azure resource providers are registered. Checks if all the required feature flags are enabled for the Azure subscription.
 
