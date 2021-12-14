@@ -28,12 +28,11 @@ def deregister_from_private_cloud(customer_resource):
     arc_addon_deleter.delete(customer_resource)
 
 def _populate_default_values_of_optional_fields_in_config(config):
-    config["isAVS"] = config.get("isAVS", False)
+    config["isAVS"] = config.get("isAVS", True)
     config["register"] = config.get("register", True)
 
     #TODO: Remove isStatic default when we support DHCP Configuration
     config["isStatic"] = config.get("isStatic", True)
-    return config
 
 if __name__ == "__main__":
     try:
