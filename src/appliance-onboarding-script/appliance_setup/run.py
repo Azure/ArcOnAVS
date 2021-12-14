@@ -27,6 +27,13 @@ def deregister_from_private_cloud(customer_resource):
     arc_addon_deleter = ArcAddonDeleter()
     arc_addon_deleter.delete(customer_resource)
 
+def _populate_default_values_of_optional_fields_in_config(config):
+    config["isAVS"] = config.get("isAVS", False)
+    config["register"] = config.get("register", True)
+
+    #TODO: Remove isStatic default when we support DHCP Configuration
+    config["isStatic"] = config.get("isStatic", True)
+    return config
 
 if __name__ == "__main__":
     try:
@@ -52,10 +59,10 @@ if __name__ == "__main__":
         format='%(asctime)s\t%(levelname)s\t%(message)s',
         level=logging.DEBUG,
         datefmt='%Y-%m-%dT%H:%M:%S')
-    is_avs = config.get('isAVS', False)
-    is_static = config.get('isStatic', True)
-    is_register = config.get('register', True)
-    if is_avs:
+
+    _populate_default_values_of_optional_fields_in_config(config)
+
+    if config["isAVS"]:
         logging.info("avs enabled")
         avs_config_validator = ConfigValidator(config)
         avs_config_validator.validate_avs_config()
@@ -75,10 +82,10 @@ if __name__ == "__main__":
             raise InvalidRegion("This feature is not available in this region. Please refer to this document for valid regions.")
 
     if operation == 'onboard':
-        if is_avs:
+        if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
-            if is_static:
+            if config["isStatic"]:
                 nsx_orchestrator: Orchestrator = NSXOrchestor(_customer_details,
                                                               dhcp_data_converter.convert_data(config),
                                                               segment_data_converter.convert_data(config))
@@ -88,7 +95,7 @@ if __name__ == "__main__":
                                                               segment_data_converter.convert_data(config))
             nsx_orchestrator.orchestrate()
             # TODO Move the DNS Helper out of the processor
-            if is_static:
+            if config["isStatic"]:
                 dns_helper = DNSHelper()
                 dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
                 config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
@@ -99,10 +106,10 @@ if __name__ == "__main__":
         env_setup.setup()
 
         vcenterId = appliance_setup.create()
-        if is_avs and is_register:
+        if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'deboard':
-        if is_avs and is_register:
+        if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)
         appliance_setup = ApplianceSetup(config, arc_vmware_res)
