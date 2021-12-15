@@ -1,11 +1,11 @@
-from datetime import timedelta
 import json, yaml, requests
 from pathlib import Path
 import logging
-from ._exceptions import AzCommandError, InvalidOperation, ProgramExit, ArmFeatureNotRegistered, OperationTimedoutError, \
+from ._exceptions import AzCommandError, InvalidOperation, ProgramExit, ArmFeatureNotRegistered, \
     ClusterExtensionCreationFailed, ArmProviderNotRegistered
 from ._az_cli import az_cli
-from ._utils import TempChangeDir, wait_until, confirm_prompt, decode_base64, delete_empty_sub_dicts, delete_unassigned_fields, get_value_using_path_in_dict, set_value_using_path_in_dict, create_dir_if_doesnot_exist, get_vm_snapshot_name
+from ._azure_resource_validations import _wait_until_appliance_is_in_running_state
+from ._utils import TempChangeDir, confirm_prompt, decode_base64, delete_empty_sub_dicts, delete_unassigned_fields, get_value_using_path_in_dict, set_value_using_path_in_dict, create_dir_if_doesnot_exist, get_vm_snapshot_name
 from . import _templates as templates
 from shutil import copy
 from ._arcvmware_resources import ArcVMwareResources
@@ -229,24 +229,7 @@ class ApplianceSetup(object):
             if err:
                 raise AzCommandError('arcappliance create command failed.')
             res = json.loads(res)
-            rg = config['resourceGroup']
-            appliance_name = config['nameForApplianceInAzure']
-            def wrapper():
-                res, err = az_cli('arcappliance', 'show',
-                    '--resource-group', f'"{rg}"',
-                    '--name', f'"{appliance_name}"'
-                )
-                if not err:
-                    res = json.loads(res)
-                    state = res['status']
-                    logging.info(f'Appliance is in {state} state.')
-                    return state
-                logging.error('Get appliance operation failed.')
-            try:
-                wait_until(wrapper, 'Running', timedelta(minutes=10), frequency=timedelta(seconds=30))
-            except TimeoutError:
-                raise OperationTimedoutError('Create Appliance operation timedout waiting for state as Running.')
-            
+            logging.info("Successfully provisioned arcappliance arm resource.")
             return res['id']
 
     def _set_default_subscription(self):
@@ -294,7 +277,11 @@ class ApplianceSetup(object):
 
         res = None
         if op == 'create':
+            
             logging.info('Creating VMware extension...')
+
+            _wait_until_appliance_is_in_running_state(config)
+
             res, err = az_cli('k8s-extension', 'create', '--debug',
                 '-n', name,
                 '-g', rg,
