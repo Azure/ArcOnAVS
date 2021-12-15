@@ -5,6 +5,7 @@ import re
 from pkgs._utils import safe_quote_string
 from ._az_cli import az_cli
 from ._exceptions import AzCommandError
+from ._azure_resource_validations import _wait_until_appliance_is_in_running_state
 
 class ArcVMwareResources(object):
 
@@ -27,7 +28,11 @@ class ArcVMwareResources(object):
 
     def _create_cl(self, appliance_id, extension_id) -> str:
         config = self._config
+
         logging.info('Creating Custom Location...')
+
+        _wait_until_appliance_is_in_running_state(config)
+
         location = config['location']
         rg = config['resourceGroup']
         name = config['customLocationAzureName']
@@ -59,7 +64,11 @@ class ArcVMwareResources(object):
 
     def _connect_vcenter(self, custom_location_id: str):
         config = self._config
+
         logging.info('Connecting vCenter...')
+
+        _wait_until_appliance_is_in_running_state(config)
+        
         location = config['location']
         rg = config['resourceGroup']
         name = config['nameForVCenterInAzure']
