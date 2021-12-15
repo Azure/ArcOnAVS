@@ -5,8 +5,8 @@ from ._utils import wait_until
 from datetime import timedelta
 from ._exceptions import OperationTimedoutError
 
-def _wait_until_appliance_is_in_running_state(config: dict, operation_for_which_appliance_is_needed_in_running_state: str):
-    logging.info(f'Waiting until Appliance is in RUNNING state before {operation_for_which_appliance_is_needed_in_running_state} operation.')
+def _wait_until_appliance_is_in_running_state(config: dict):
+    logging.info(f'Waiting until Appliance is in RUNNING state.')
     resource_group = config['resourceGroup']
     appliance_name = config['nameForApplianceInAzure']
     def wrapper():
@@ -22,6 +22,6 @@ def _wait_until_appliance_is_in_running_state(config: dict, operation_for_which_
         logging.error('Get appliance operation failed.')
     try:
         wait_until(wrapper, 'Running', timedelta(minutes=10), frequency=timedelta(seconds=30))
-        logging.info(f'Appliance is in RUNNING state before {operation_for_which_appliance_is_needed_in_running_state} operation.')
+        logging.info(f'Appliance is in RUNNING state.')
     except TimeoutError:
-        raise OperationTimedoutError(f'Timeout occured while waiting for Appliance to be in RUNNING state before {operation_for_which_appliance_is_needed_in_running_state} operation.')
+        raise OperationTimedoutError(f'Timeout occured while waiting for Appliance to be in RUNNING state.')
