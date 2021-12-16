@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):
-            raise InvalidRegion("This feature is not available in this region. Please refer to this document for valid regions.")
+            raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
     if operation == 'onboard':
         if config["isAVS"]:

@@ -23,7 +23,7 @@ Ensure you meet all the prerequisites mentioned below:
 8. On the vCenter Server, allow inbound connections on TCP port 443, so that the Arc resource bridge and VMware cluster extension can communicate with the vCenter server.
 (As of today, only the default port of 443 is supported if you use a different port, Appliance VM creation will fail) 
 
-9. Internet access from AVS SDDC.
+9. Internet should be enabled in Azure VMWare Solution SDDC.
 
 10. Provide required inputs in `config_avs.json`
 
@@ -55,53 +55,43 @@ sudo bash run.sh <onboard/deboard> <path_to_config_avs.json>
 
 Onboard command does following:
 
-1. Downloads and installs [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli), [Python](https://www.python.org/downloads/) and [govc](https://github.com/vmware/govmomi/releases).
+1. Downloads and installs required tools to be able to execute preview software from jump box (az cli tools, python etc.), if not present already. 
 
-2. Creates a python virtual environment in .temp directory
+2. Creates an Azure VMware Solution segment as per details if not present already. Creates DNS server and zones if not present already. Fetch vCenter credentials. 
 
-3. Installs ARC related azure-cli extensions
+3. Creates template for Arc Appliance and takes snapshot from template created. 
 
-4. Creates required NSX components(such as segment) if they don't exist already etc.
+4. Deploys the Arc for Azure VMware Solution appliance VM. 
 
-3. Ensures all the required Azure resource providers are registered. Checks if all the required feature flags are enabled for the Azure subscription.
+5. Creates an ARM resource for the appliance. 
 
-3. Creates a VM template from OVA.
+6. Creates a Kubernetes extension resource for azure VMware. 
 
-4. Creates a snapshot of the VM template created.
+7. Creates a custom location.  
 
-5. Deploys the appliance VM in the vCenter based on the snapshot.
+8. Creates an Azure representation of the vCenter. 
 
-6. Creates an ARM representation of appliance VM as Resource Bridge in Azure.
-
-7. Installs `azure-vmwareoperator` k8s cluster extension on the Appliance.
-
-8. Creates a Custom Location representing your VMWare vSphere environment.
-
-9. Creates an Azure representation of your vCenter.
-
-10. Registers Azure representation of your vCenter with Azure Arc.
+9. Links the vCenter resource to the Azure VMware Solution Private Cloud resource. 
 
 ### `deboard` command
 
 Deboard command does the following operations:
 
-1. Un-registers Azure representation of your vCenter with Azure Arc.
+1. Download and install required tools to be able to execute preview software from jump box (az cli tools, python etc.), if not present already. 
 
-2. Deletes Azure representation of your vCenter.
+2. De-links the vCenter resource from the Azure VMware Solution Private cloud resource. 
 
-3. Deletes Custom Location representing your VMWare vSphere environment.
+3. Deletes the azure representation of the vCenter. 
 
-4. Deletes the `azure-vmwareoperator` k8s cluster extension.
+4. Deletes the Custom Location resource, the Kubernetes extension for Azure VMware operator, the ARM resource for the appliance 
 
-5. Deletes ARM representation of appliance VM.
-
-6. Deletes the appliance VM (on your vCenter).
+5. Deletes the appliance VM. 
 
 This command is provided to create a clean slate before retrying in case of failures.
 
 ## Feedback
 
-In case of any questions/feedback reach out to arc-vmware-feedback@microsoft.com
+In case of any questions/feedback fill this(https://aka.ms/ArcOnAVSFeedbackForm) form and we will reach out to you.
 
 ## Contributing
 
