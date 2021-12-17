@@ -22,7 +22,7 @@ $ProgressPreference = 'SilentlyContinue'
 $AzExtensions=@{
     "arcappliance"="0.2.11";
     "connectedvmware"="0.1.5";
-    "k8s-extension"="1.0.1";
+    "k8s-extension"="1.0.2";
     "customlocation"="0.1.3"};
 
 function checkIfAzExtensionIsInstalled($name, $version)
