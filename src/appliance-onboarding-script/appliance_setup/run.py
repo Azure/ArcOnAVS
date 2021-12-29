@@ -27,6 +27,12 @@ def deregister_from_private_cloud(customer_resource):
     arc_addon_deleter = ArcAddonDeleter()
     arc_addon_deleter.delete(customer_resource)
 
+def _populate_default_values_of_optional_fields_in_config(config):
+    config["isAVS"] = config.get("isAVS", True)
+    config["register"] = config.get("register", True)
+
+    #TODO: Remove isStatic default when we support DHCP Configuration
+    config["isStatic"] = config.get("isStatic", True)
 
 if __name__ == "__main__":
     try:
@@ -52,12 +58,10 @@ if __name__ == "__main__":
         format='%(asctime)s\t%(levelname)s\t%(message)s',
         level=logging.DEBUG,
         datefmt='%Y-%m-%dT%H:%M:%S')
-    is_avs = False
-    try:
-        is_avs = config['isAVS']
-    except KeyError:
-        pass
-    if is_avs:
+
+    _populate_default_values_of_optional_fields_in_config(config)
+
+    if config["isAVS"]:
         logging.info("avs enabled")
         avs_config_validator = ConfigValidator(config)
         avs_config_validator.validate_avs_config()
@@ -74,13 +78,10 @@ if __name__ == "__main__":
 
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):
-            raise InvalidRegion("This feature is not available in this region. Please refer to this document for valid regions.")
-
-        # TODO: Remove the mandatory config called "register" after internal testing.
-        #  This condition allows testing with and without the register API call.
+            raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
     if operation == 'onboard':
-        if is_avs:
+        if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
             if config["isStatic"]:
@@ -104,10 +105,10 @@ if __name__ == "__main__":
         env_setup.setup()
 
         vcenterId = appliance_setup.create()
-        if is_avs and config["register"]:
+        if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'deboard':
-        if is_avs and config["register"]:
+        if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)
         appliance_setup = ApplianceSetup(config, arc_vmware_res)
