@@ -24,7 +24,7 @@ class CredentialsRetriever(Retriever):
         credential_url = self._credential_url.format(customer_resource.subscription_id, customer_resource.resource_group,
                                     customer_resource.private_cloud)
         az_cli = AzCli().append(Constant.REST).append("-m").append(Constant.POST).append("-u").\
-            append(credential_url).append("--debug")
+            append(credential_url)
         res = self._az_cli_executor.run_az_cli(az_cli)
         print("customer credentials retrieved")
         return self._build_vmware_credentials(res)

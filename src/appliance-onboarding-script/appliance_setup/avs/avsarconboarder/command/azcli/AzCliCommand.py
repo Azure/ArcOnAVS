@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 
@@ -20,7 +21,7 @@ class AzCliCommand(Command):
     def _az_cli_command_execute(self):
         try:
             result = self._execute_process(self.az_cli)
-            print(result)
+            logging.debug(result)
             # if result is not None and not empty
             if result:
                 result = json.loads(result.strip())
