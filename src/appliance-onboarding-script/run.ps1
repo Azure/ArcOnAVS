@@ -1,7 +1,8 @@
 [CmdletBinding()]
 Param(
     [parameter(Mandatory=$true)][string]$Operation,
-    [Parameter(Mandatory=$true)] [string] $FilePath
+    [Parameter(Mandatory=$true)] [string] $FilePath,
+    [Parameter(Mandatory=$false)] [string] $LogLevel
 )
 
 $majorVersion = $PSVersionTable.PSVersion.Major
@@ -205,7 +206,7 @@ foreach($x in $AzExtensions.GetEnumerator())
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath
+py .\appliance_setup\run.py $Operation $FilePath $LogLevel
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode

@@ -54,9 +54,25 @@ if __name__ == "__main__":
         data = f.read()
         config = json.loads(data)
 
+    try:
+        log_level = sys.argv[3]
+    except IndexError:
+        log_level = "INFO"
+
+    log_level_dict = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "CRITICAL": logging.CRITICAL,
+    }
+
+    if log_level not in log_level_dict.keys():
+        raise InvalidOperation('Supported loglevels are {}'.format(log_level_dict.keys()))
+
     logging.basicConfig(
         format='%(asctime)s\t%(levelname)s\t%(message)s',
-        level=logging.DEBUG,
+        level=log_level_dict[log_level],
         datefmt='%Y-%m-%dT%H:%M:%S')
 
     _populate_default_values_of_optional_fields_in_config(config)
