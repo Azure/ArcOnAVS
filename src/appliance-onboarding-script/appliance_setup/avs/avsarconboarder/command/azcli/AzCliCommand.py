@@ -26,7 +26,7 @@ class AzCliCommand(Command):
             if result:
                 result = json.loads(result.strip())
         except Exception as e:
-            print(e)
+            logging.exception(e)
             raise e
         return result
 

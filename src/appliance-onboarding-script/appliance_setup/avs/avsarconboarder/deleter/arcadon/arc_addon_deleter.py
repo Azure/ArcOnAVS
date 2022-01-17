@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from ...executor.azcli._AzCliExecutor import AzCliExecutor
@@ -24,7 +25,7 @@ class ArcAddonDeleter(Deleter):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for delete arc addon :: ", res)
+            logging.info("response for delete arc addon :: ", res)
         except Exception as e:
             raise ArcAddOnDeletionException("Exception occured while deleting arc addon!") from e
         return res

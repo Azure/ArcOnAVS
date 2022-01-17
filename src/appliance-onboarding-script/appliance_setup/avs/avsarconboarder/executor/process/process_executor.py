@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import tempfile
@@ -17,7 +18,7 @@ class ProcessExecutor(Executor):
             with open(log_path, 'w') as fp:
                 pass
             process_cmd = self._process_cmd+" >> "+log_path
-            print(self._process_cmd+" >> "+log_path)
+            logging.info(self._process_cmd+" >> "+log_path)
         else:
             process_cmd = self._process_cmd
         output = subprocess.check_output(process_cmd, timeout=100000, shell=True)

@@ -1,4 +1,5 @@
 import json
+import logging
 
 from ...executor.azcli._AzCliExecutor import AzCliExecutor
 from ...constants import Constant
@@ -31,7 +32,7 @@ class SegmentCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for create segment :: ", res)
+            logging.info("response for create segment :: ", res)
         except Exception as e:
             raise SegmentCreationException("Exception occured while creating segment!") from e
         return res

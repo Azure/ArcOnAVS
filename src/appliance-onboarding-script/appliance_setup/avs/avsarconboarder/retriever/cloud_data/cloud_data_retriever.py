@@ -1,3 +1,5 @@
+import logging
+
 from ...entity.CustomerResource import CustomerResource
 from ...executor.azcli._AzCliExecutor import AzCliExecutor
 from ...constants import Constant
@@ -19,7 +21,7 @@ class CloudDataRetriever(Retriever):
         return cls.instance
 
     def retrieve_data(self, object):
-        print("retrieve_data")
+        logging.info("retrieve_data")
         customer_resource: CustomerResource = object
         cloud_details_url = self._cloud_details_url.format(customer_resource.subscription_id,
                                                                customer_resource.resource_group,
@@ -39,5 +41,5 @@ class CloudDataRetriever(Retriever):
         cloud_data[Constant.PROVISIONING_STATE], cloud_data[Constant.CLUSTER_SIZE] = cloud_data_helper. \
             find_provisioning_state_cluster_size()
         cloud_data[Constant.VNET_IP_CIDR] = cloud_data_helper.find_vnet_ip_cidr()
-        print("customer cloud details retrieved")
+        logging.info("customer cloud details retrieved")
         return cloud_data
