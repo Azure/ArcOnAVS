@@ -39,10 +39,10 @@ if __name__ == "__main__":
         operation = sys.argv[1]
     except IndexError:
         raise InvalidOperation(
-            'Operation is not passed as argument. Supported versions are \"onboard\" and \"deboard\"')
+            'Operation is not passed as argument. Supported versions are \"onboard\" and \"offboard\"')
 
-    if operation not in ['onboard', 'deboard']:
-        raise InvalidOperation('Supported versions are \"onboard\" and \"deboard\" ')
+    if operation not in ['onboard', 'offboard']:
+        raise InvalidOperation('Supported versions are \"onboard\" and \"offboard\" ')
 
     file_path = None
     try:
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         vcenterId = appliance_setup.create()
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
-    elif operation == 'deboard':
+    elif operation == 'offboard':
         if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)

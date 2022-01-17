@@ -29,7 +29,7 @@ Ensure you meet all the prerequisites mentioned below:
 
 ## Using the script
 
-The script provides `onboard` and `deboard` commands.
+The script provides `onboard` and `offboard` commands.
 
 ### On a Windows machine
 
@@ -37,7 +37,7 @@ Open a PowerShell window and run the following command. You will need to bypass 
 As with any script downloaded from the internet, do read its contents before running it.
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/deboard> -FilePath <path_to_config_avs.json>
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/offboard> -FilePath <path_to_config_avs.json>
 ```
 
 ### On a Linux machine
@@ -46,7 +46,7 @@ Use commands as follows:
 
 ```bash
 sudo chmod +x run.sh 
-sudo bash run.sh <onboard/deboard> <path_to_config_avs.json>
+sudo bash run.sh <onboard/offboard> <path_to_config_avs.json>
 ```
 
 ## Commands Description
@@ -73,9 +73,9 @@ Onboard command does following:
 
 9. Links the vCenter resource to the Azure VMware Solution Private Cloud resource. 
 
-### `deboard` command
+### `offboard` command
 
-Deboard command does the following operations:
+Offboard command does the following operations:
 
 1. Download and install required tools to be able to execute preview software from jump box (az cli tools, python etc.), if not present already. 
 
