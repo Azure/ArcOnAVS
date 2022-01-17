@@ -1,3 +1,5 @@
+import logging
+
 from ...creator.type.creator_type import CreatorType
 from ...entity._segmentData import SegmentData
 from ...entity.request._segment_request import SegmentRequest
@@ -27,7 +29,7 @@ class SegmentProcessor(Processor):
     def pre_process(self):
         res = self._segment_helper.get_segment_list(self._customer_res.subscription_id, self._customer_res.resource_group,
                                                     self._customer_res.private_cloud)
-        print('res in pre_process in segment processor :: ', res)
+        logging.info('res in pre_process in segment processor :: ', res)
         self._tnt_gw = self._segment_helper.retrieve_gateway(res)
         self._segment_list = res
         Processor.pre_process(self)
@@ -37,7 +39,7 @@ class SegmentProcessor(Processor):
 
         args = [self._customer_res, segment_req]
         res = self._segment_creator.create(args)
-        print("segment created successfully :: ",res)
+        logging.info("segment created successfully :: ",res)
 
     def build_segment_request(self):
         subnet_details = {"dhcpRanges": self._segment_data.dhcp_range,

@@ -28,7 +28,7 @@ class DHCPCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for create dhcp :: ", res)
+            logging.info("response for create dhcp :: ", res)
         except Exception as e:
             raise DHCPCreationException("Exception occured while creating DHCP server!") from e
         return res

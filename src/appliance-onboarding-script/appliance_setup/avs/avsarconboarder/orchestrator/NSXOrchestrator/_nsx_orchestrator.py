@@ -1,3 +1,5 @@
+import logging
+
 from ...entity._dhcpData import DHCPData
 from ...entity._segmentData import SegmentData
 from ...entity.data.retrieved_data import CustomerDetails
@@ -36,15 +38,15 @@ class NSXOrchestor(Orchestrator):
             try:
                 self._event_orchestrator.orchestrate(ProcessorType.dhcp)
             except AlreadyExistsException as aee:
-                print(aee.args[0])
+                logging.info(aee.args[0])
         try:
             self._event_orchestrator.orchestrate(ProcessorType.segment)
         except AlreadyExistsException as aee:
-            print(aee.args[0])
+            logging.info(aee.args[0])
 
         try:
             self._event_orchestrator.orchestrate(ProcessorType.dns)
         except AlreadyExistsException as aee:
-            print(aee.args[0])
+            logging.info(aee.args[0])
 
         return

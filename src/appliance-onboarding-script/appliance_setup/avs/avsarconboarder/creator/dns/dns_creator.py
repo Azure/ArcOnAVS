@@ -35,7 +35,7 @@ class DNSZoneCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for create dns zone :: ", res)
+            logging.info("response for create dns zone :: ", res)
         except Exception as e:
             raise DNSZoneCreationException("Exception occured while creating dns zone!") from e
         return res

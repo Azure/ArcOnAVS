@@ -1,4 +1,5 @@
 import json
+import logging
 
 from ....executor.azcli._AzCliExecutor import AzCliExecutor
 from ....constants import Constant
@@ -44,5 +45,5 @@ class NSXSegmentHelper:
             .append(create_segment_uri).append("--properties").append(json.dumps(segment_request)) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
         res = self.run_az_cli(az_cli)
-        print("response for create segment :: ", res)
+        logging.info("response for create segment :: ", res)
         return json.loads(res)

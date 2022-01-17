@@ -1,3 +1,5 @@
+import logging
+
 from ....constants import Constant
 from ....entity.AzCli import AzCli
 from ....entity.CustomerResource import CustomerResource
@@ -18,7 +20,7 @@ class DNSHelper:
         return cls.instance
 
     def retrieve_dns_config(self, customer_resource: CustomerResource, private_cloud_details):
-        print("retrieving_dns_data")
+        logging.info("retrieving_dns_data")
         dns_zone_details = self._find_dns_zone_details(customer_resource)
         zone_details = {}
         if dns_zone_details is not None and dns_zone_details['value'] is not None and len(
