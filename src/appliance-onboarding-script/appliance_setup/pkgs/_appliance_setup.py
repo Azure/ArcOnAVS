@@ -182,7 +182,7 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Validating appliance config...')
-            res, err = az_cli('arcappliance', 'validate', 'vmware', '--debug',
+            res, err = az_cli('arcappliance', 'validate', 'vmware',
                 '--config-file', 'vmware-appliance.yaml')
 
             # TODO: Uncomment the block below. Currently arc appliance validate command  returns error even for
@@ -196,7 +196,7 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Preparing appliance...')
-            res, err = az_cli( 'arcappliance', 'prepare', 'vmware', '--debug',
+            res, err = az_cli( 'arcappliance', 'prepare', 'vmware',
                 '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance prepare command failed.')
@@ -210,7 +210,7 @@ class ApplianceSetup(object):
                 raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
-                res, err = az_cli('arcappliance', 'deploy', 'vmware', '--debug',
+                res, err = az_cli('arcappliance', 'deploy', 'vmware',
                     '--config-file', 'vmware-appliance.yaml')
                 if err:
                     if not confirm_prompt('Deployment failed. Still want to proceed?'):
@@ -223,7 +223,7 @@ class ApplianceSetup(object):
                 logging.info('Skipping deploy step...')
 
             logging.info('Create appliance ARM resource...')
-            res, err = az_cli('arcappliance', 'create', 'vmware', '--debug',
+            res, err = az_cli('arcappliance', 'create', 'vmware',
                 '--config-file', 'vmware-appliance.yaml',
                 '--kubeconfig', 'kubeconfig')
             if err:
@@ -244,8 +244,7 @@ class ApplianceSetup(object):
         with TempChangeDir(self._temp_dir):
             logging.info('Deleting appliance...')
             res, err = az_cli('arcappliance', 'delete', 'vmware', '-y',
-                '--config-file', 'vmware-appliance.yaml',
-                '--debug')
+                '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance delete command failed.')
 
@@ -282,7 +281,7 @@ class ApplianceSetup(object):
 
             _wait_until_appliance_is_in_running_state(config)
 
-            res, err = az_cli('k8s-extension', 'create', '--debug',
+            res, err = az_cli('k8s-extension', 'create',
                 '-n', name,
                 '-g', rg,
                 '--cluster-name', f'"{appliance_name}"',
@@ -303,7 +302,7 @@ class ApplianceSetup(object):
             return res['id']
         else:
             logging.info('Deleting VMware extension...')
-            _, err = az_cli('k8s-extension', 'delete', '--debug', '-y',
+            _, err = az_cli('k8s-extension', 'delete', '-y',
                 '-n', 'azure-vmwareoperator',
                 '-g', f'"{rg}"',
                 '--cluster-name', f'"{appliance_name}"',

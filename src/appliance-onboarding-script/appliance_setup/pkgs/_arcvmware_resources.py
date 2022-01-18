@@ -37,7 +37,7 @@ class ArcVMwareResources(object):
         rg = config['resourceGroup']
         name = config['customLocationAzureName']
         k8s_namespace = re.sub('[^a-zA-Z0-9-]', '-', name.lower())
-        res, err = az_cli('customlocation', 'create', '--debug',
+        res, err = az_cli('customlocation', 'create',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
             '--cluster-extension-ids', f'"{extension_id}"',
@@ -55,7 +55,7 @@ class ArcVMwareResources(object):
         logging.info('Deleting Custom Location...')
         rg = config['resourceGroup']
         name = config['customLocationAzureName']
-        _, err = az_cli('customlocation', 'delete', '--debug', '-y',
+        _, err = az_cli('customlocation', 'delete', '-y',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"'
         )

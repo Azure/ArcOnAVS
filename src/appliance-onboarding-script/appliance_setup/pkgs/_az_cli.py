@@ -11,6 +11,8 @@ def az_cli (*args):
     res = None
     try:
         cmd = 'az ' + ' '.join(args)
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            cmd = cmd + ' --debug'
         logging.debug(f'Executing command {cmd}')
         res = subprocess.check_output(cmd, shell=True)
         res = bytes_to_string(res)
