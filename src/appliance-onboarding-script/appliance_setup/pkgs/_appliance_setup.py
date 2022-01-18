@@ -57,7 +57,6 @@ class ApplianceSetup(object):
     # Atleast one feature from provided listed under a namespace should be registered.
     _list_of_required_features = [
         {
-            'feature': ['Appliances-ppauto', 'Appliances-pp'],
             'namespace': 'Microsoft.ResourceConnector'
         },
         {
