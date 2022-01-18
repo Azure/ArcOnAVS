@@ -76,7 +76,7 @@ class ArcVMwareResources(object):
         port = config['vCenterPort']
         username = config['vCenterUserName']
         password = config['vCenterPassword']
-        res, err = az_cli('connectedvmware', 'vcenter', 'connect', '--info',
+        res, err = az_cli('connectedvmware', 'vcenter', 'connect',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
             '--location', f'"{location}"',
@@ -96,7 +96,7 @@ class ArcVMwareResources(object):
         logging.info('Deleting vCenter...')
         rg = config['resourceGroup']
         name = config['nameForVCenterInAzure']
-        _, err = az_cli('connectedvmware', 'vcenter', 'delete', '--info', '--yes',
+        _, err = az_cli('connectedvmware', 'vcenter', 'delete', '--yes',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
         )

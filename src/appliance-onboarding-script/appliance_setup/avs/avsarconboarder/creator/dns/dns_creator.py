@@ -32,8 +32,6 @@ class DNSZoneCreator(Creator):
             .append(create_dns_zone).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE) \
 
-        if logging.getLogger().isEnabledFor(logging.DEBUG):
-            az_cli = az_cli.append("--debug")
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
@@ -66,9 +64,6 @@ class DNSServiceCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_dns_service).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
-
-        if logging.getLogger().isEnabledFor(logging.DEBUG):
-            az_cli = az_cli.append("--debug")
 
         res = None
         try:
