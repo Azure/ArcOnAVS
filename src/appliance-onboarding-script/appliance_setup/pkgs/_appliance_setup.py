@@ -182,8 +182,8 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Validating appliance config...')
-            err = os.system(' '.join(['az', 'arcappliance', 'validate', 'vmware', '--debug',
-                '--config-file', 'vmware-appliance.yaml',]))
+            res, err = az_cli('arcappliance', 'validate', 'vmware', '--debug',
+                '--config-file', 'vmware-appliance.yaml')
 
             # TODO: Uncomment the block below. Currently arc appliance validate command  returns error even for
             #  correct config. Once this is fixed, the following can be uncommented.
@@ -196,8 +196,8 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Preparing appliance...')
-            err = os.system(' '.join(['az', 'arcappliance', 'prepare', 'vmware', '--debug',
-                '--config-file', 'vmware-appliance.yaml',]))
+            res, err = az_cli( 'arcappliance', 'prepare', 'vmware', '--debug',
+                '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance prepare command failed.')
 
@@ -210,8 +210,8 @@ class ApplianceSetup(object):
                 raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
-                err = os.system(' '.join(['az', 'arcappliance', 'deploy', 'vmware', '--debug',
-                    '--config-file', 'vmware-appliance.yaml',]))
+                res, err = az_cli('arcappliance', 'deploy', 'vmware', '--debug',
+                    '--config-file', 'vmware-appliance.yaml')
                 if err:
                     if not confirm_prompt('Deployment failed. Still want to proceed?'):
                         raise AzCommandError('arcappliance deploy command failed.')
@@ -243,9 +243,9 @@ class ApplianceSetup(object):
     def _delete_appliance(self):
         with TempChangeDir(self._temp_dir):
             logging.info('Deleting appliance...')
-            err = os.system(' '.join(['az', 'arcappliance', 'delete', 'vmware', '-y',
+            res, err = az_cli('arcappliance', 'delete', 'vmware', '-y',
                 '--config-file', 'vmware-appliance.yaml',
-                '--debug']))
+                '--debug')
             if err:
                 raise AzCommandError('arcappliance delete command failed.')
 
