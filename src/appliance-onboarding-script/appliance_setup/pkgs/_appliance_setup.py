@@ -57,7 +57,6 @@ class ApplianceSetup(object):
     # Atleast one feature from provided listed under a namespace should be registered.
     _list_of_required_features = [
         {
-            'feature': ['Appliances-ppauto', 'Appliances-pp'],
             'namespace': 'Microsoft.ResourceConnector'
         },
         {
@@ -221,6 +220,9 @@ class ApplianceSetup(object):
                     pass
             else:
                 logging.info('Skipping deploy step...')
+
+            # Rest of the deployment will be taken care by template which will be invoked from run.ps1
+            raise Exception("Template Test")
 
             logging.info('Create appliance ARM resource...')
             res, err = az_cli('arcappliance', 'create', 'vmware', '--debug',

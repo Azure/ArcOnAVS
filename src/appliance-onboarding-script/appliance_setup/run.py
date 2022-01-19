@@ -80,6 +80,9 @@ if __name__ == "__main__":
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
+    # Have to reassign value of new arc rg that we will create using template to resourceGroup field in config.
+    # This is because this value is present in vmware-resource.yaml config file and appliance-connect agent expects rg of resource bridge
+    config['resourceGroup'] = 'utkarsh-avs-arc-rg'
     if operation == 'onboard':
         if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()

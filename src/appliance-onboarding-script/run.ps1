@@ -205,10 +205,20 @@ foreach($x in $AzExtensions.GetEnumerator())
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath
-$OperationExitCode = $LASTEXITCODE
+if($Operation -eq "onboard") {
+	
+    py .\appliance_setup\run.py $Operation $FilePath
+    $OperationExitCode = $LASTEXITCODE
 
-printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
+    printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
+
+	$publicKey = kubectl get secret appliance-public-key -n appliance-public --kubeconfig kubeconfig -o jsonpath="{.data.publicKey}"
+
+	az deployment sub create --location westeurope --template-file ..\Templates\arcOnAVS.bicep --parameters avsResourceGroupName=utkarsh-avs-rg avsPrivateCloudName=utkarsh-avs appliancePublicKey=$publicKey type=onboard
+
+} else {
+    az deployment sub create --location westeurope --template-file ..\Templates\arcOnAVS.bicep --parameters avsResourceGroupName=utkarsh-avs-rg avsPrivateCloudName=utkarsh-avs appliancePublicKey=123 type=deboard
+}
 
 deactivate_venv
 
