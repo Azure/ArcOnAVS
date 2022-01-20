@@ -17,6 +17,6 @@ def az_cli (*args):
         res = subprocess.check_output(cmd, shell=True)
         res = bytes_to_string(res)
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
         return res, 1
     return res, 0
