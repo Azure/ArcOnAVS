@@ -68,7 +68,7 @@ if __name__ == "__main__":
     }
 
     if log_level not in log_level_dict.keys():
-        raise InvalidOperation('Supported loglevels are {}'.format(log_level_dict.keys()))
+        raise InvalidOperation('Entered log level {} is not supported. Supported loglevels are {}'.format(log_level, log_level_dict.keys()))
 
     logging.basicConfig(
         format='%(asctime)s\t%(levelname)s\t%(message)s',
