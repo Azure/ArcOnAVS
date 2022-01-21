@@ -20,7 +20,7 @@ class AzCli:
 
     def build_az_cli(self):
         if logging.getLogger().isEnabledFor(logging.DEBUG):
-            self.az_command = self.az_command.append("--debug")
+            self.az_args = self.az_args.append("--debug")
         str_az_cmd = self.az_command
         str_az_cmd = str_az_cmd+" " + " ".join(self.az_args)
         return str_az_cmd
