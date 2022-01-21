@@ -39,6 +39,11 @@ As with any script downloaded from the internet, do read its contents before run
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/offboard> -FilePath <path_to_config_avs.json>
 ```
+You can additionally specify the log level as debug to get DEBUG level logs.
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation <onboard/offboard> -FilePath <path_to_config_avs.json> -LogLevel DEBUG
+```
 
 ### On a Linux machine
 
@@ -47,6 +52,12 @@ Use commands as follows:
 ```bash
 sudo chmod +x run.sh 
 sudo bash run.sh <onboard/offboard> <path_to_config_avs.json>
+```
+You can additionally specify the log level as debug to get DEBUG level logs.
+
+```bash
+sudo chmod +x run.sh
+sudo bash run.sh <onboard/offboard> <path_to_config_avs.json> DEBUG
 ```
 
 ## Commands Description
