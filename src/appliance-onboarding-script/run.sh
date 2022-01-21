@@ -129,7 +129,7 @@ python3.8 -m venv .temp/.env || fail
 activate_python_venv
 python -m pip install --upgrade pip || fail
 python -m pip install -r ./appliance_setup/dependencies || fail
-python ./appliance_setup/run.py "$1" "$2" "$3"
+python ./appliance_setup/run.py "$1" "$2" "${3:-INFO}"
 operation_exit_code=$?
 print_operation_status_message $1 $operation_exit_code
 deactivate_python_venv
