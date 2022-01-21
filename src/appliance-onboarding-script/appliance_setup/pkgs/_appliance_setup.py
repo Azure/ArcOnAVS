@@ -187,8 +187,8 @@ class ApplianceSetup(object):
             # TODO: Uncomment the block below. Currently arc appliance validate command  returns error even for
             #  correct config. Once this is fixed, the following can be uncommented.
 
-            # if err:
-                # raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
+            if err:
+                raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
 
     def _prepare_appliance(self):
         with TempChangeDir(self._temp_dir):
