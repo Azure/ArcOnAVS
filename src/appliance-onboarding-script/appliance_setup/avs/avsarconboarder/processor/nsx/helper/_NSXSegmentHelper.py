@@ -45,5 +45,5 @@ class NSXSegmentHelper:
             .append(create_segment_uri).append("--properties").append(json.dumps(segment_request)) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
         res = self.run_az_cli(az_cli)
-        logging.info("response for create segment :: ", res)
+        logging.info("Created segment")
         return json.loads(res)

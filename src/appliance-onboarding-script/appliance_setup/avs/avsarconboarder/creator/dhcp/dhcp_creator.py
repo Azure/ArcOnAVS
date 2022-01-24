@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 
 from ...executor.azcli._AzCliExecutor import AzCliExecutor
@@ -28,7 +29,7 @@ class DHCPCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            logging.info("response for create dhcp :: ", res)
+            logging.info("Created DHCP server")
         except Exception as e:
             raise DHCPCreationException("Exception occured while creating DHCP server!") from e
         return res

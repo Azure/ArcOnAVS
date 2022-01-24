@@ -29,7 +29,7 @@ class ArcAddonCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            logging.info("response for create arc addon :: ", res)
+            logging.info("Created arc addon")
         except Exception as e:
             raise ArcAddOnCreationException("Exception occured while creating arc addon!") from e
         return res

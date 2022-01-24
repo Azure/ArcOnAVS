@@ -32,7 +32,7 @@ class SegmentCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            logging.info("response for create segment :: ", res)
+            logging.info("Created segment")
         except Exception as e:
             raise SegmentCreationException("Exception occured while creating segment!") from e
         return res
