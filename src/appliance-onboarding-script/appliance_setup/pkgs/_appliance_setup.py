@@ -151,8 +151,6 @@ class ApplianceSetup(object):
                 raise ArmFeatureNotRegistered(f'All the features should be registered from list {required_features_list} under namespace {namespace}')
 
     def delete(self):
-        if not confirm_prompt('Do you want to proceed with delete appliance operation?'):
-            return
         self._create_template_files()
         self._update_local_yaml_with_user_config()
         self._set_default_subscription()
