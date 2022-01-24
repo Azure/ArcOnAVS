@@ -184,9 +184,6 @@ class ApplianceSetup(object):
             res, err = az_cli('arcappliance', 'validate', 'vmware',
                 '--config-file', 'vmware-appliance.yaml')
 
-            # TODO: Uncomment the block below. Currently arc appliance validate command  returns error even for
-            #  correct config. Once this is fixed, the following can be uncommented.
-
             if err:
                 raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
             logging.info("arcappliance validate command succeeded")
