@@ -69,7 +69,7 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ExtendedLocation'
         },
         {
-            'feature': 'AzureArcForAVS',
+            'feature': ['AzureArcForAVS', 'earlyAccess'],
             'namespace': 'Microsoft.AVS'
         }
     ]
@@ -146,9 +146,9 @@ class ApplianceSetup(object):
             res = json.loads(res)
             registered_featues = list(filter(lambda x: x['properties']['state'] == 'Registered', res))
             registered_featues = list(map(lambda x: x['name'].lower(), registered_featues))
-            if len(set(required_features_list).intersection(registered_featues)) <= 0:
+            if len(set(required_features_list).intersection(registered_featues)) < len(required_features_list):
                 required_features_list = item['feature']
-                raise ArmFeatureNotRegistered(f'Atleast one feature should be registered from list {required_features_list} under namespace {namespace}')
+                raise ArmFeatureNotRegistered(f'All the features should be registered from list {required_features_list} under namespace {namespace}')
 
     def delete(self):
         if not confirm_prompt('Do you want to proceed with delete appliance operation?'):
