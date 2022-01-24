@@ -189,6 +189,7 @@ class ApplianceSetup(object):
 
             if err:
                 raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
+            logging.info("arcappliance validate command succeeded")
 
     def _prepare_appliance(self):
         with TempChangeDir(self._temp_dir):
@@ -199,6 +200,8 @@ class ApplianceSetup(object):
                 '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance prepare command failed.')
+
+            logging.info("arcappliance prepare command succeeded")
 
     def _deploy_and_create_appliance(self) -> str:
         is_api_server_reachable = self._check_if_apiserver_is_reachable()
@@ -214,6 +217,7 @@ class ApplianceSetup(object):
                 if err:
                     if not confirm_prompt('Deployment failed. Still want to proceed?'):
                         raise AzCommandError('arcappliance deploy command failed.')
+                logging.info("arcappliance deploy command succeeded")
                 try:
                     copy('kubeconfig', '../')
                 except:
@@ -246,6 +250,7 @@ class ApplianceSetup(object):
                 '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance delete command failed.')
+            logging.info("arcappliance delete command succeeded")
 
     def _create_or_delete_vmware_extension(self, op='create') -> str:
         config = self._config
@@ -298,6 +303,7 @@ class ApplianceSetup(object):
             res = json.loads(res)
             if res['provisioningState'] != 'Succeeded':
                 raise ClusterExtensionCreationFailed(f"cluster extension creation failed. response id {res}")
+            logging.info("Create k8s-extension instance command succeeded")
             return res['id']
         else:
             logging.info('Deleting VMware extension...')
@@ -309,6 +315,7 @@ class ApplianceSetup(object):
             )
             if err:
                 raise AzCommandError(f'Delete k8s-extension instance failed.')
+            logging.info("Delete k8s-extension instance command succeeded")
 
     def _create_template_files(self):
         create_dir_if_doesnot_exist(self._temp_dir)

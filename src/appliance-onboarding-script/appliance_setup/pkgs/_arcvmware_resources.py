@@ -47,6 +47,7 @@ class ArcVMwareResources(object):
         )
         if err:
             raise AzCommandError('Create Custom Location failed.')
+        logging.info("Create Custom Location succeeded")
         res = json.loads(res)
         return res['id']
 
@@ -61,6 +62,8 @@ class ArcVMwareResources(object):
         )
         if err:
             raise AzCommandError('Delete Custom Location failed.')
+
+        logging.info("Delete Custom Location succeeded")
 
     def _connect_vcenter(self, custom_location_id: str):
         config = self._config
@@ -89,6 +92,8 @@ class ArcVMwareResources(object):
         res = json.loads(res)
         if err:
             raise AzCommandError('Connect vCenter failed.')
+
+        logging.info("Connect vCenter succeeded")
         return res['id']
 
     def _delete_vcenter(self):
@@ -102,4 +107,6 @@ class ArcVMwareResources(object):
         )
         if err:
             raise AzCommandError('Delete vCenter failed.')
+
+        logging.info("Delete vCenter succeeded")
         
