@@ -57,7 +57,6 @@ class ApplianceSetup(object):
     # Atleast one feature from provided listed under a namespace should be registered.
     _list_of_required_features = [
         {
-            'feature': ['Appliances-ppauto', 'Appliances-pp'],
             'namespace': 'Microsoft.ResourceConnector'
         },
         {
@@ -70,7 +69,7 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ExtendedLocation'
         },
         {
-            'feature': 'AzureArcForAVS',
+            'feature': ['AzureArcForAVS', 'earlyAccess'],
             'namespace': 'Microsoft.AVS'
         }
     ]
@@ -147,13 +146,11 @@ class ApplianceSetup(object):
             res = json.loads(res)
             registered_featues = list(filter(lambda x: x['properties']['state'] == 'Registered', res))
             registered_featues = list(map(lambda x: x['name'].lower(), registered_featues))
-            if len(set(required_features_list).intersection(registered_featues)) <= 0:
+            if len(set(required_features_list).intersection(registered_featues)) < len(required_features_list):
                 required_features_list = item['feature']
-                raise ArmFeatureNotRegistered(f'Atleast one feature should be registered from list {required_features_list} under namespace {namespace}')
+                raise ArmFeatureNotRegistered(f'All the features should be registered from list {required_features_list} under namespace {namespace}')
 
     def delete(self):
-        if not confirm_prompt('Do you want to proceed with delete appliance operation?'):
-            return
         self._create_template_files()
         self._update_local_yaml_with_user_config()
         self._set_default_subscription()
@@ -182,24 +179,24 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Validating appliance config...')
-            err = os.system(' '.join(['az', 'arcappliance', 'validate', 'vmware', '--debug',
-                '--config-file', 'vmware-appliance.yaml',]))
+            res, err = az_cli('arcappliance', 'validate', 'vmware',
+                '--config-file', 'vmware-appliance.yaml')
 
-            # TODO: Uncomment the block below. Currently arc appliance validate command  returns error even for
-            #  correct config. Once this is fixed, the following can be uncommented.
-
-            # if err:
-                # raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
+            if err:
+                raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
+            logging.info("arcappliance validate command succeeded")
 
     def _prepare_appliance(self):
         with TempChangeDir(self._temp_dir):
             config = self._config
 
             logging.info('Preparing appliance...')
-            err = os.system(' '.join(['az', 'arcappliance', 'prepare', 'vmware', '--debug',
-                '--config-file', 'vmware-appliance.yaml',]))
+            res, err = az_cli( 'arcappliance', 'prepare', 'vmware',
+                '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance prepare command failed.')
+
+            logging.info("arcappliance prepare command succeeded")
 
     def _deploy_and_create_appliance(self) -> str:
         is_api_server_reachable = self._check_if_apiserver_is_reachable()
@@ -210,11 +207,12 @@ class ApplianceSetup(object):
                 raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
-                err = os.system(' '.join(['az', 'arcappliance', 'deploy', 'vmware', '--debug',
-                    '--config-file', 'vmware-appliance.yaml',]))
+                res, err = az_cli('arcappliance', 'deploy', 'vmware',
+                    '--config-file', 'vmware-appliance.yaml')
                 if err:
                     if not confirm_prompt('Deployment failed. Still want to proceed?'):
                         raise AzCommandError('arcappliance deploy command failed.')
+                logging.info("arcappliance deploy command succeeded")
                 try:
                     copy('kubeconfig', '../')
                 except:
@@ -223,7 +221,7 @@ class ApplianceSetup(object):
                 logging.info('Skipping deploy step...')
 
             logging.info('Create appliance ARM resource...')
-            res, err = az_cli('arcappliance', 'create', 'vmware', '--debug',
+            res, err = az_cli('arcappliance', 'create', 'vmware',
                 '--config-file', 'vmware-appliance.yaml',
                 '--kubeconfig', 'kubeconfig')
             if err:
@@ -243,11 +241,11 @@ class ApplianceSetup(object):
     def _delete_appliance(self):
         with TempChangeDir(self._temp_dir):
             logging.info('Deleting appliance...')
-            err = os.system(' '.join(['az', 'arcappliance', 'delete', 'vmware', '-y',
-                '--config-file', 'vmware-appliance.yaml',
-                '--debug']))
+            res, err = az_cli('arcappliance', 'delete', 'vmware', '-y',
+                '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance delete command failed.')
+            logging.info("arcappliance delete command succeeded")
 
     def _create_or_delete_vmware_extension(self, op='create') -> str:
         config = self._config
@@ -282,7 +280,7 @@ class ApplianceSetup(object):
 
             _wait_until_appliance_is_in_running_state(config)
 
-            res, err = az_cli('k8s-extension', 'create', '--debug',
+            res, err = az_cli('k8s-extension', 'create',
                 '-n', name,
                 '-g', rg,
                 '--cluster-name', f'"{appliance_name}"',
@@ -300,10 +298,11 @@ class ApplianceSetup(object):
             res = json.loads(res)
             if res['provisioningState'] != 'Succeeded':
                 raise ClusterExtensionCreationFailed(f"cluster extension creation failed. response id {res}")
+            logging.info("Create k8s-extension instance command succeeded")
             return res['id']
         else:
             logging.info('Deleting VMware extension...')
-            _, err = az_cli('k8s-extension', 'delete', '--debug', '-y',
+            _, err = az_cli('k8s-extension', 'delete', '-y',
                 '-n', 'azure-vmwareoperator',
                 '-g', f'"{rg}"',
                 '--cluster-name', f'"{appliance_name}"',
@@ -311,6 +310,7 @@ class ApplianceSetup(object):
             )
             if err:
                 raise AzCommandError(f'Delete k8s-extension instance failed.')
+            logging.info("Delete k8s-extension instance command succeeded")
 
     def _create_template_files(self):
         create_dir_if_doesnot_exist(self._temp_dir)

@@ -1,3 +1,5 @@
+import logging
+
 from ....constants import Constant
 from ....exception import VCSADetailsNotFoundException, InternetEnabledFlagNotFound, \
     ManagementClusterNotFound, VNETIPCIDRNotFound
@@ -13,14 +15,14 @@ class CloudDataHelper:
         pass
 
     def get_vcsa_endpoint(self):
-        print("finding vcsa endpoint")
+        logging.info("finding vcsa endpoint")
         if self.cloud_details[self._PROPERTIES] is None and self.cloud_details[self._PROPERTIES]['endpoints'] is None and \
                 self.cloud_details[self._PROPERTIES]['endpoints']['vcsa'] is None:
             raise VCSADetailsNotFoundException("vcsa details not found")
         return self.cloud_details[self._PROPERTIES]['endpoints']['vcsa']
 
     def find_internet_enabled(self):
-        print("finding internet enabled")
+        logging.info("finding internet enabled")
         if self.cloud_details[self._PROPERTIES] is None and self.cloud_details[self._PROPERTIES][Constant.INTERNET] is None:
             raise InternetEnabledFlagNotFound("internet enabled details not found")
         if self.cloud_details[self._PROPERTIES][Constant.INTERNET] == 'Disabled':
@@ -32,7 +34,7 @@ class CloudDataHelper:
         return self._find_cluster_provision_state(), self._find_cluster_size()
 
     def _find_cluster_size(self):
-        print("finding cluster size")
+        logging.info("finding cluster size")
         if self.cloud_details[self._PROPERTIES] is None and self.cloud_details[self._PROPERTIES][
             'managementCluster'] is None and \
                 self.cloud_details[self._PROPERTIES]['managementCluster']['clusterSize'] is None:
@@ -41,7 +43,7 @@ class CloudDataHelper:
         return cluster_size
 
     def _find_cluster_provision_state(self):
-        print("finding provisioning state")
+        logging.info("finding provisioning state")
         if self.cloud_details[self._PROPERTIES] is None and self.cloud_details[self._PROPERTIES][
             'managementCluster'] is None and \
                 self.cloud_details[self._PROPERTIES]['managementCluster']['provisioningState'] is None:

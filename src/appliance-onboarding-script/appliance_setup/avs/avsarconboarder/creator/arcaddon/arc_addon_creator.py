@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 
 from ...executor.azcli._AzCliExecutor import AzCliExecutor
@@ -28,7 +29,7 @@ class ArcAddonCreator(Creator):
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for create arc addon :: ", res)
+            logging.info("Created arc addon")
         except Exception as e:
             raise ArcAddOnCreationException("Exception occured while creating arc addon!") from e
         return res

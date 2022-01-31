@@ -37,7 +37,7 @@ class ArcVMwareResources(object):
         rg = config['resourceGroup']
         name = config['customLocationAzureName']
         k8s_namespace = re.sub('[^a-zA-Z0-9-]', '-', name.lower())
-        res, err = az_cli('customlocation', 'create', '--debug',
+        res, err = az_cli('customlocation', 'create',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
             '--cluster-extension-ids', f'"{extension_id}"',
@@ -47,6 +47,7 @@ class ArcVMwareResources(object):
         )
         if err:
             raise AzCommandError('Create Custom Location failed.')
+        logging.info("Create Custom Location succeeded")
         res = json.loads(res)
         return res['id']
 
@@ -55,12 +56,14 @@ class ArcVMwareResources(object):
         logging.info('Deleting Custom Location...')
         rg = config['resourceGroup']
         name = config['customLocationAzureName']
-        _, err = az_cli('customlocation', 'delete', '--debug', '-y',
+        _, err = az_cli('customlocation', 'delete', '-y',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"'
         )
         if err:
             raise AzCommandError('Delete Custom Location failed.')
+
+        logging.info("Delete Custom Location succeeded")
 
     def _connect_vcenter(self, custom_location_id: str):
         config = self._config
@@ -76,7 +79,7 @@ class ArcVMwareResources(object):
         port = config['vCenterPort']
         username = config['vCenterUserName']
         password = config['vCenterPassword']
-        res, err = az_cli('connectedvmware', 'vcenter', 'connect', '--debug',
+        res, err = az_cli('connectedvmware', 'vcenter', 'connect',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
             '--location', f'"{location}"',
@@ -89,6 +92,8 @@ class ArcVMwareResources(object):
         res = json.loads(res)
         if err:
             raise AzCommandError('Connect vCenter failed.')
+
+        logging.info("Connect vCenter succeeded")
         return res['id']
 
     def _delete_vcenter(self):
@@ -96,10 +101,12 @@ class ArcVMwareResources(object):
         logging.info('Deleting vCenter...')
         rg = config['resourceGroup']
         name = config['nameForVCenterInAzure']
-        _, err = az_cli('connectedvmware', 'vcenter', 'delete', '--debug', '--yes',
+        _, err = az_cli('connectedvmware', 'vcenter', 'delete', '--yes',
             '--resource-group', f'"{rg}"',
             '--name', f'"{name}"',
         )
         if err:
             raise AzCommandError('Delete vCenter failed.')
+
+        logging.info("Delete vCenter succeeded")
         

@@ -1,3 +1,4 @@
+import logging
 from _ast import Constant
 
 from ...constants import Constant
@@ -21,7 +22,7 @@ class DHCPProcessor(Processor):
 
     def validate(self):
         if self._dhcp_server_count >= 1:
-            print("dhcp creation is not required it already exists")
+            logging.info("dhcp creation is not required it already exists")
             raise AlreadyExistsException('DHCP already enabled')
         return True
 
@@ -40,5 +41,5 @@ class DHCPProcessor(Processor):
                                    leaseTime=None,
                                    revision=0)
         res = self.dhcp_creator.create([self.customer_res, dhcp_request])
-        print("res for create DHCP -- ", res)
+        logging.info("res for create DHCP -- ", res)
         pass

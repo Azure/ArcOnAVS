@@ -31,11 +31,11 @@ class DNSZoneCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_dns_zone).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE) \
-            .append("--debug")
+
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            print("response for create dns zone :: ", res)
+            logging.info("Created dns zone")
         except Exception as e:
             raise DNSZoneCreationException("Exception occured while creating dns zone!") from e
         return res
@@ -63,12 +63,12 @@ class DNSServiceCreator(Creator):
         json_data = json.dumps(json.dumps(self._create_dns_service_payload(self._customer_res, dns_data)))
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_dns_service).append("--properties").append(json_data) \
-            .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE).append("--debug")
+            .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
 
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
-            logging.info("response for create dns service :: ", res)
+            logging.info("Created DNS service")
         except Exception as e:
             time.sleep(60)
             dns_server_details = self._dns_helper.find_dns_server_details(self._customer_res)

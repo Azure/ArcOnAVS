@@ -12,7 +12,7 @@ from avs.avsarconboarder.utils.utils import validate_region
 from avs.converter._converter import Converter
 from avs.converter.nsx.nsx_converter import DHCPConverter, SegmentConverter
 from pkgs import ApplianceSetup, VMwareEnvSetup, ArcVMwareResources
-from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion
+from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion, ProgramExit
 from avs.avsarconboarder.entity.request.arc_addon_request import ArcAddonRequest
 from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreator
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
@@ -54,9 +54,25 @@ if __name__ == "__main__":
         data = f.read()
         config = json.loads(data)
 
+    try:
+        log_level = sys.argv[3]
+    except IndexError:
+        log_level = "INFO"
+
+    log_level_dict = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "CRITICAL": logging.CRITICAL,
+    }
+
+    if log_level not in log_level_dict.keys():
+        raise InvalidOperation('Entered log level {} is not supported. Supported loglevels are {}'.format(log_level, log_level_dict.keys()))
+
     logging.basicConfig(
         format='%(asctime)s\t%(levelname)s\t%(message)s',
-        level=logging.DEBUG,
+        level=log_level_dict[log_level],
         datefmt='%Y-%m-%dT%H:%M:%S')
 
     _populate_default_values_of_optional_fields_in_config(config)
@@ -108,6 +124,8 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
+        if not confirm_prompt('Do you want to proceed with offboard operation?'):
+            raise ProgramExit('User chose to exit the program.')
         if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)

@@ -11,10 +11,12 @@ def az_cli (*args):
     res = None
     try:
         cmd = 'az ' + ' '.join(args)
-        logging.info(f'Executing command {cmd}')
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            cmd = cmd + ' --debug'
+        logging.debug(f'Executing command {cmd}')
         res = subprocess.check_output(cmd, shell=True)
         res = bytes_to_string(res)
     except Exception as e:
-        logging.info(e)
+        logging.exception(e)
         return res, 1
     return res, 0
