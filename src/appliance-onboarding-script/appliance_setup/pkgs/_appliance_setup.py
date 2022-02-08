@@ -295,6 +295,14 @@ class ApplianceSetup(object):
             )
             if err:
                 raise AzCommandError(f'Create k8s-extension instance failed.')
+            res, err = az_cli('k8s-extension', 'show',
+                              '-n', name,
+                              '-g', rg,
+                              '--cluster-name', f'"{appliance_name}"',
+                              '--cluster-type', 'appliances',
+                              )
+            if err:
+                raise AzCommandError(f'Get k8s-extension instance failed.')
             res = json.loads(res)
             if res['provisioningState'] != 'Succeeded':
                 raise ClusterExtensionCreationFailed(f"cluster extension creation failed. response id {res}")
