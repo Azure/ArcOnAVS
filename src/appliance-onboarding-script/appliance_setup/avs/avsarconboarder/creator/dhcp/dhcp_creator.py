@@ -26,10 +26,14 @@ class DHCPCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_dhcp_uri).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
+
+        get_az_cli = AzCli().append(Constant.RESOURCE).append(Constant.GET).append("--id") \
+            .append(create_dhcp_uri)
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
             logging.info("Created DHCP server")
+            res = self._az_cli_executor.run_az_cli(get_az_cli)
         except Exception as e:
             raise DHCPCreationException("Exception occured while creating DHCP server!") from e
         return res

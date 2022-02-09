@@ -29,10 +29,13 @@ class SegmentCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_segment_uri).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.STABLE_API_VERSION_VALUE)
+        get_az_cli = AzCli().append(Constant.RESOURCE).append(Constant.GET).append("--id") \
+            .append(create_segment_uri)
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
             logging.info("Created segment")
+            res = self._az_cli_executor.run_az_cli(get_az_cli)
         except Exception as e:
             raise SegmentCreationException("Exception occured while creating segment!") from e
         return res

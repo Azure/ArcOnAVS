@@ -26,10 +26,13 @@ class ArcAddonCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_arc_addon_uri).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.PREVIEW_API_VERSION_VALUE)
+        get_az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
+            .append(create_arc_addon_uri)
         res = None
         try:
             res = self._az_cli_executor.run_az_cli(az_cli)
             logging.info("Created arc addon")
+            res = self._az_cli_executor.run_az_cli(get_az_cli)
         except Exception as e:
             raise ArcAddOnCreationException("Exception occured while creating arc addon!") from e
         return res
