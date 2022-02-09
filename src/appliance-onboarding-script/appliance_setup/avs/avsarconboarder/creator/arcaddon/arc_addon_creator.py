@@ -26,6 +26,9 @@ class ArcAddonCreator(Creator):
         az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_arc_addon_uri).append("--properties").append(json_data) \
             .append(Constant.API_VERSION_DOUBLE_DASH).append(Constant.PREVIEW_API_VERSION_VALUE)
+
+        # Adding explicit get call to work around ongoing issue where
+        # Az CLI put calls do not return the complete resource payload
         get_az_cli = AzCli().append(Constant.RESOURCE).append(Constant.CREATE).append("--id") \
             .append(create_arc_addon_uri)
         res = None
