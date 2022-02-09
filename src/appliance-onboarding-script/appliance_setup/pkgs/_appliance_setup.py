@@ -226,8 +226,17 @@ class ApplianceSetup(object):
                 '--kubeconfig', 'kubeconfig')
             if err:
                 raise AzCommandError('arcappliance create command failed.')
-            res = json.loads(res)
             logging.info("Successfully provisioned arcappliance arm resource.")
+
+            # Adding explicit get call to work around ongoing issue where
+            # Az CLI put calls do not return the complete resource payload
+            resource_group = config['resourceGroup']
+            appliance_name = config['nameForApplianceInAzure']
+            res, err = az_cli('arcappliance', 'show',
+                              '--resource-group', f'"{resource_group}"',
+                              '--name', f'"{appliance_name}"'
+                              )
+            res = json.loads(res)
             return res['id']
 
     def _set_default_subscription(self):
@@ -295,6 +304,9 @@ class ApplianceSetup(object):
             )
             if err:
                 raise AzCommandError(f'Create k8s-extension instance failed.')
+
+            # Adding explicit get call to work around ongoing issue where
+            # Az CLI put calls do not return the complete resource payload
             res, err = az_cli('k8s-extension', 'show',
                               '-n', name,
                               '-g', rg,
