@@ -48,6 +48,13 @@ class ArcVMwareResources(object):
         if err:
             raise AzCommandError('Create Custom Location failed.')
         logging.info("Create Custom Location succeeded")
+
+        # Adding explicit get call to work around ongoing issue where
+        # Az CLI put calls do not return the complete resource payload
+        res, err = az_cli('customlocation', 'show',
+                          '--resource-group', f'"{rg}"',
+                          '--name', f'"{name}"'
+                          )
         res = json.loads(res)
         return res['id']
 
@@ -89,11 +96,17 @@ class ArcVMwareResources(object):
             '--username', f'"{username}"',
             '--password', safe_quote_string(password)
         )
-        res = json.loads(res)
         if err:
             raise AzCommandError('Connect vCenter failed.')
-
         logging.info("Connect vCenter succeeded")
+
+        # Adding explicit get call to work around ongoing issue where
+        # Az CLI put calls do not return the complete resource payload
+        res, err = az_cli('connectedvmware', 'vcenter', 'show',
+                          '--resource-group', f'"{rg}"',
+                          '--name', f'"{name}"'
+                          )
+        res = json.loads(res)
         return res['id']
 
     def _delete_vcenter(self):
