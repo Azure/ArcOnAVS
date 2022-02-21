@@ -14,7 +14,7 @@ var vmwareRpSpId = '46b1b4eb-ab16-4ce8-aa55-096807312417'
 var vCenterIP = '10.0.0.2'
 var vCenterPort = 443
 var vCenterUserName = 'cloudadmin@vsphere.local'
-var vCenterPassword = '!1mt@tZ52M5l'
+var vCenterPassword = 'REDACTED'
 
 resource applianceArmResource 'Microsoft.ResourceConnector/appliances@2021-10-31-preview' = {
 	name: applianceArmResourceName
