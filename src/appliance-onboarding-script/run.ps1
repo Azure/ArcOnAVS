@@ -21,7 +21,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Use empty string for the version to fetch latest CLI version
 $AzExtensions=@{
-    "arcappliance"="0.2.11";
+    "arcappliance"="0.2.16";
     "connectedvmware"="0.1.6";
     "k8s-extension"="1.0.4";
     "customlocation"="0.1.3"};
