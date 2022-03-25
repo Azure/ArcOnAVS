@@ -59,7 +59,7 @@ class VMwareEnvSetup(object):
         if self._resource_pool_exists(resource_pool):
             logging.info("resource pool already exists")
             return
-        _, err = govc_cli('pool.create', + resource_pool)
+        _, err = govc_cli('pool.create', resource_pool)
         if err:
             raise vCenterOperationFailed('Resource Pool creation failed.')
         logging.info("resource pool created successfully")
