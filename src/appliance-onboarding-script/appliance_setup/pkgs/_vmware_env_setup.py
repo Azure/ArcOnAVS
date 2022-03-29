@@ -35,15 +35,15 @@ class VMwareEnvSetup(object):
 
     def _create_folder(self):
         logging.info("in _create_folder")
-        folder_name = self._config['folderForApplianceVM']
+        folder = self._config['folderForApplianceVM']
         datacenter = self._config['datacenterForApplianceVM']
-        if self._folder_exists(folder_name):
+        if self._folder_exists(folder):
             logging.info("folder already exists")
             return
-        _, err = govc_cli('folder.create', '/' + datacenter + '/vm/' + folder_name)
+        _, err = govc_cli('folder.create', folder)
         if err:
             raise vCenterOperationFailed('Folder creation failed.')
-
+        logging.info("folder created successfully")
         return
 
     def _folder_exists(self, folder_name: str):
@@ -54,14 +54,15 @@ class VMwareEnvSetup(object):
 
     def _create_resource_pool(self):
         logging.info("in _create_resource_pool")
-        resource_pool_name = self._config['resourcePoolForApplianceVM']
+        resource_pool = self._config['resourcePoolForApplianceVM']
         datacenter = self._config['datacenterForApplianceVM']
-        if self._resource_pool_exists(resource_pool_name):
+        if self._resource_pool_exists(resource_pool):
             logging.info("resource pool already exists")
             return
-        _, err = govc_cli('pool.create', '*/Resources/' + resource_pool_name)
+        _, err = govc_cli('pool.create', resource_pool)
         if err:
             raise vCenterOperationFailed('Resource Pool creation failed.')
+        logging.info("resource pool created successfully")
         return
 
     def _resource_pool_exists(self, res_pool_name):
