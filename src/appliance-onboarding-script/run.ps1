@@ -21,9 +21,9 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Use empty string for the version to fetch latest CLI version
 $AzExtensions=@{
-    "arcappliance"="0.2.16";
+    "arcappliance"="0.2.18";
     "connectedvmware"="0.1.6";
-    "k8s-extension"="1.0.4";
+    "k8s-extension"="1.1.0";
     "customlocation"="0.1.3"};
 
 function checkIfAzExtensionIsInstalled($name, $version)
