@@ -18,6 +18,47 @@ from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreat
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
 from pkgs._utils import confirm_prompt
 
+def logger_setup(logLevel = logging.INFO):
+    log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    LOG_FILE_ERROR = 'log.err'
+    LOG_FILE_WARNING = 'log.warning'
+    LOG_FILE_INFO = 'log.info'
+    LOG_FILE_DEBUG = 'log.debug'
+
+    # get the root logger
+    log = logging.getLogger()
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(log_formatter)
+    stream_handler.setLevel(logging.INFO)
+    log.addHandler(stream_handler)
+
+    if logLevel <= logging.ERROR:
+        file_handler_error = logging.FileHandler(LOG_FILE_ERROR, mode='w')
+        file_handler_error.setFormatter(log_formatter)
+        file_handler_error.setLevel(logging.ERROR)
+        log.addHandler(file_handler_error)
+
+    if logLevel <= logging.WARNING:
+        file_handler_warning = logging.FileHandler(LOG_FILE_WARNING, mode='w')
+        file_handler_warning.setFormatter(log_formatter)
+        file_handler_warning.setLevel(logging.WARNING)
+        log.addHandler(file_handler_warning)
+
+    if logLevel <= logging.INFO:
+        file_handler_info = logging.FileHandler(LOG_FILE_INFO, mode='w')
+        file_handler_info.setFormatter(log_formatter)
+        file_handler_info.setLevel(logging.INFO)
+        log.addHandler(file_handler_info)
+
+    if logLevel <= logging.DEBUG:
+        file_handler_debug = logging.FileHandler(LOG_FILE_DEBUG, mode='w')
+        file_handler_debug.setFormatter(log_formatter)
+        file_handler_debug.setLevel(logging.DEBUG)
+        log.addHandler(file_handler_debug)
+
+    log.setLevel(logLevel)
+
+
 def register_with_private_cloud(customer_resource, vcenterId: str):
     arc_addon_creator = ArcAddonCreator()
     arc_addon_creator.create(customer_resource, ArcAddonRequest("Arc", vcenterId))
@@ -70,10 +111,7 @@ if __name__ == "__main__":
     if log_level not in log_level_dict.keys():
         raise InvalidOperation('Entered log level {} is not supported. Supported loglevels are {}'.format(log_level, log_level_dict.keys()))
 
-    logging.basicConfig(
-        format='%(asctime)s\t%(levelname)s\t%(message)s',
-        level=log_level_dict[log_level],
-        datefmt='%Y-%m-%dT%H:%M:%S')
+    logger_setup(log_level_dict[log_level])
 
     _populate_default_values_of_optional_fields_in_config(config)
 
