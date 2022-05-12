@@ -17,7 +17,7 @@ def az_cli (*args):
         try:
             res = subprocess.check_output(cmd, shell=True)
         except subprocess.CalledProcessError as e:
-            logging.error(e.output)
+            logging.error(bytes_to_string(e.output))
             return res, 1
         res = bytes_to_string(res)
     except Exception as e:

@@ -3,6 +3,7 @@ import os
 import subprocess
 import tempfile
 
+
 from ...executor.Executor import Executor
 
 
@@ -24,7 +25,7 @@ class ProcessExecutor(Executor):
         try:
             output = subprocess.check_output(process_cmd, timeout=100000, shell=True)
         except subprocess.CalledProcessError as e:
-            logging.error(e.output)
+            logging.error(e.output.decode('UTF-8', errors='strict'))
             return None
         result = output.decode('UTF-8', errors='strict')
         return result
