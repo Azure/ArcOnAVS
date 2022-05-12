@@ -14,7 +14,11 @@ def govc_cli(*args):
         try:
             cmd = os.path.join('.', 'govc')
             cmd = cmd + ' ' + args
-            res = subprocess.check_output(cmd, shell=True)
+            try:
+                res = subprocess.check_output(cmd, shell=True)
+            except subprocess.CalledProcessError as e:
+                logging.error(e.output)
+                return res, 1
             res = bytes_to_string(res)
         except Exception as e:
             logging.exception(e)

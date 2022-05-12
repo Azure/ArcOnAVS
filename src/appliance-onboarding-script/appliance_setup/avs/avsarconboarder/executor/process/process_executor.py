@@ -21,6 +21,10 @@ class ProcessExecutor(Executor):
             logging.info(self._process_cmd+" >> "+log_path)
         else:
             process_cmd = self._process_cmd
-        output = subprocess.check_output(process_cmd, timeout=100000, shell=True)
+        try:
+            output = subprocess.check_output(process_cmd, timeout=100000, shell=True)
+        except subprocess.CalledProcessError as e:
+            logging.error(e.output)
+            return None
         result = output.decode('UTF-8', errors='strict')
         return result
