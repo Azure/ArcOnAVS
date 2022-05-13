@@ -33,21 +33,21 @@ def logger_setup(logLevel = logging.INFO):
 
     # Critical, Error and Warning go to this file
     if logLevel <= logging.WARNING:
-        file_handler_warning = logging.FileHandler(LOG_FILE_ERROR, mode='w')
+        file_handler_warning = logging.FileHandler(LOG_FILE_ERROR, mode='a')
         file_handler_warning.setFormatter(log_formatter)
         file_handler_warning.setLevel(logging.WARNING)
         log.addHandler(file_handler_warning)
 
     # Info goes to this file
     if logLevel <= logging.INFO:
-        file_handler_info = logging.FileHandler(LOG_FILE_INFO, mode='w')
+        file_handler_info = logging.FileHandler(LOG_FILE_INFO, mode='a')
         file_handler_info.setFormatter(log_formatter)
         file_handler_info.setLevel(logging.INFO)
         log.addHandler(file_handler_info)
 
     # Debug goes to this file
     if logLevel <= logging.DEBUG:
-        file_handler_debug = logging.FileHandler(LOG_FILE_DEBUG, mode='w')
+        file_handler_debug = logging.FileHandler(LOG_FILE_DEBUG, mode='a')
         file_handler_debug.setFormatter(log_formatter)
         file_handler_debug.setLevel(logging.DEBUG)
         log.addHandler(file_handler_debug)
