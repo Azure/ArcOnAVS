@@ -21,7 +21,6 @@ from pkgs._utils import confirm_prompt
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     LOG_FILE_ERROR = 'log.err'
-    LOG_FILE_WARNING = 'log.warning'
     LOG_FILE_INFO = 'log.info'
     LOG_FILE_DEBUG = 'log.debug'
 
@@ -34,7 +33,7 @@ def logger_setup(logLevel = logging.INFO):
 
     # Critical, Error and Warning go to this file
     if logLevel <= logging.WARNING:
-        file_handler_warning = logging.FileHandler(LOG_FILE_WARNING, mode='w')
+        file_handler_warning = logging.FileHandler(LOG_FILE_ERROR, mode='w')
         file_handler_warning.setFormatter(log_formatter)
         file_handler_warning.setLevel(logging.WARNING)
         log.addHandler(file_handler_warning)
