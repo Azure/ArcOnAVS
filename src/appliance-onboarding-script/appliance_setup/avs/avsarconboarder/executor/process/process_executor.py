@@ -5,6 +5,7 @@ import tempfile
 
 
 from ...executor.Executor import Executor
+from ...utils.utils import bytes_to_string
 
 
 class ProcessExecutor(Executor):
@@ -25,7 +26,8 @@ class ProcessExecutor(Executor):
         try:
             output = subprocess.check_output(process_cmd, timeout=100000, shell=True)
         except subprocess.CalledProcessError as e:
-            logging.error(e.output.decode('UTF-8', errors='strict'))
+            logging.error(bytes_to_string(e.output))
             return None
-        result = output.decode('UTF-8', errors='strict')
+        result = bytes_to_string(output)
+
         return result
