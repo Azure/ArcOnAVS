@@ -1,7 +1,8 @@
 import json
 import logging
+import os
 import sys
-
+from datetime import datetime
 from avs._avs_orchestrator import AVSOrchestrator
 from avs.avsarconboarder.orchestrator.NSXOrchestrator._nsx_orchestrator import NSXOrchestor
 from avs.avsarconboarder.orchestrator._orchestrator import Orchestrator
@@ -20,9 +21,14 @@ from pkgs._utils import confirm_prompt
 
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-    LOG_FILE_ERROR = 'log.err'
-    LOG_FILE_INFO = 'log.info'
-    LOG_FILE_DEBUG = 'log.debug'
+    LOG_DIR = "logs"
+    current_time = datetime.now()
+    LOG_FILE_ERROR = f'log_{current_time}.err'
+    LOG_FILE_INFO = f'log_{current_time}.info'
+    LOG_FILE_DEBUG = f'log_{current_time}.debug'
+
+    # Create logs directory if it does not already exist
+    os.mkdir(LOG_DIR)
 
     # get the root logger
     log = logging.getLogger()
@@ -33,21 +39,21 @@ def logger_setup(logLevel = logging.INFO):
 
     # Critical, Error and Warning go to this file
     if logLevel <= logging.WARNING:
-        file_handler_warning = logging.FileHandler(LOG_FILE_ERROR, mode='a')
+        file_handler_warning = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_ERROR), mode='a')
         file_handler_warning.setFormatter(log_formatter)
         file_handler_warning.setLevel(logging.WARNING)
         log.addHandler(file_handler_warning)
 
     # Info goes to this file
     if logLevel <= logging.INFO:
-        file_handler_info = logging.FileHandler(LOG_FILE_INFO, mode='a')
+        file_handler_info = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_INFO), mode='a')
         file_handler_info.setFormatter(log_formatter)
         file_handler_info.setLevel(logging.INFO)
         log.addHandler(file_handler_info)
 
     # Debug goes to this file
     if logLevel <= logging.DEBUG:
-        file_handler_debug = logging.FileHandler(LOG_FILE_DEBUG, mode='a')
+        file_handler_debug = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_DEBUG), mode='a')
         file_handler_debug.setFormatter(log_formatter)
         file_handler_debug.setLevel(logging.DEBUG)
         log.addHandler(file_handler_debug)
