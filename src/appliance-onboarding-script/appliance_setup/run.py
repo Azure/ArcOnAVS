@@ -59,6 +59,11 @@ if __name__ == "__main__":
     except IndexError:
         log_level = "INFO"
 
+    try:
+        default_vmware_sp_object_id = sys.argv[4]
+    except IndexError:
+        default_vmware_sp_object_id = None
+    
     log_level_dict = {
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
@@ -115,7 +120,7 @@ if __name__ == "__main__":
                 dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
                 config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
         arc_vmware_res = ArcVMwareResources(config)
-        appliance_setup = ApplianceSetup(config, arc_vmware_res)
+        appliance_setup = ApplianceSetup(config, arc_vmware_res, default_vmware_sp_object_id)
 
         env_setup = VMwareEnvSetup(config)
         env_setup.setup()
@@ -124,12 +129,13 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
-        if not confirm_prompt('Do you want to proceed with offboard operation?'):
-            raise ProgramExit('User chose to exit the program.')
+        # Removing confirm_prompts for automated testing
+        #if not confirm_prompt('Do you want to proceed with offboard operation?'):
+        #    raise ProgramExit('User chose to exit the program.')
         if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)
-        appliance_setup = ApplianceSetup(config, arc_vmware_res)
+        appliance_setup = ApplianceSetup(config, arc_vmware_res, default_vmware_sp_object_id)
         appliance_setup.delete()
     else:
         raise InvalidOperation(f"Invalid operation entered - {operation}")

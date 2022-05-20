@@ -1,4 +1,5 @@
 import json, yaml, requests
+from tokenize import String
 from pathlib import Path
 import logging
 from ._exceptions import AzCommandError, InvalidOperation, ProgramExit, ArmFeatureNotRegistered, \
@@ -87,13 +88,14 @@ class ApplianceSetup(object):
     _default_release_train = "stable"
     _vmware_rp_sp_id = "ac9dc5fe-b644-4832-9d03-d9f1ab70c5f7"
 
-    def __init__(self, config: dict, arc_vmware_resources: ArcVMwareResources):
+    def __init__(self, config: dict, arc_vmware_resources: ArcVMwareResources, default_vmware_sp_object_id: String):
         self._config = config
         self._local_appliance_yaml: str = self._temp_dir + '/vmware-appliance.yaml'
         self._local_resource_yaml: str = self._temp_dir + '/vmware-resource.yaml'
         self._local_infra_yaml: str = self._temp_dir + '/vmware-infra.yaml'
         self._local_vmware_extension: str = self._temp_dir + '/vmware-extension.json'
         self._arc_vmware_resources = arc_vmware_resources
+        self._default_vmware_sp_object_id = default_vmware_sp_object_id
 
     def _copy_proxy_cert_update_config(self):
         config = self._config
@@ -114,7 +116,7 @@ class ApplianceSetup(object):
         self._validate_appliance()
         self._prepare_appliance()
         appliance_id = self._deploy_and_create_appliance()
-        extension_id = self._create_or_delete_vmware_extension('create')
+        extension_id = self._create_or_delete_vmware_extension('create', self.default_vmware_sp_object_id)
         if extension_id is not None:
             return self._arc_vmware_resources.create(appliance_id, extension_id)
 
@@ -159,7 +161,7 @@ class ApplianceSetup(object):
         except AzCommandError as e:
             logging.info(e)
         try:
-            self._create_or_delete_vmware_extension('delete')
+            self._create_or_delete_vmware_extension('delete', self.default_vmware_sp_object_id)
         except AzCommandError as e:
             logging.info(e)
         self._delete_appliance()
@@ -203,15 +205,19 @@ class ApplianceSetup(object):
         with TempChangeDir(self._temp_dir):
             config = self._config
             apiserver_address = config['applianceControlPlaneIpAddress']
-            if is_api_server_reachable and not confirm_prompt(f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?'):
-                raise ProgramExit('User chose to exit the program.')
+            # Removing confirm_prompts for automated testing 
+            # TODO Check what needs to be done in case there is a reachable ApiServer
+            # For now, we consider the Api server to be correctly configured and don't deploy a new one.
+            #if is_api_server_reachable and not confirm_prompt(f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?'):
+            #    raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
                 res, err = az_cli('arcappliance', 'deploy', 'vmware',
                     '--config-file', 'vmware-appliance.yaml')
                 if err:
-                    if not confirm_prompt('Deployment failed. Still want to proceed?'):
-                        raise AzCommandError('arcappliance deploy command failed.')
+                    # Removing confirm_prompts for automated testing
+                    #if not confirm_prompt('Deployment failed. Still want to proceed?'):
+                    raise AzCommandError('arcappliance deploy command failed.')
                 logging.info("arcappliance deploy command succeeded")
                 try:
                     copy('kubeconfig', '../')
@@ -256,7 +262,7 @@ class ApplianceSetup(object):
                 raise AzCommandError('arcappliance delete command failed.')
             logging.info("arcappliance delete command succeeded")
 
-    def _create_or_delete_vmware_extension(self, op='create') -> str:
+    def _create_or_delete_vmware_extension(self, op='create', default_vmware_sp_object_id = None) -> str:
         config = self._config
         if op not in ['create', 'delete']:
             raise InvalidOperation('Supported operations are \"create\" and \"delete\".')
@@ -275,12 +281,15 @@ class ApplianceSetup(object):
         except KeyError:
             pass
 
-        vmware_rp_sp, err = az_cli('ad', 'sp', 'show', '--id', f'"{self._vmware_rp_sp_id}"')
-        if err:
-            raise AzCommandError("Unable to get VMware SP object id.")
+        if default_vmware_sp_object_id is None:
+            vmware_rp_sp, err = az_cli('ad', 'sp', 'show', '--id', f'"{self._vmware_rp_sp_id}"')
+            if err:
+                raise AzCommandError("Unable to get VMware SP object id.")
 
-        vmware_rp_sp = json.loads(vmware_rp_sp)
-        vmware_rp_object_id = vmware_rp_sp["objectId"]
+            vmware_rp_sp = json.loads(vmware_rp_sp)
+            vmware_rp_object_id = vmware_rp_sp["objectId"]
+        else:
+            vmware_rp_object_id = default_vmware_sp_object_id
 
         res = None
         if op == 'create':

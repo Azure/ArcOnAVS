@@ -109,7 +109,7 @@ then
   sudo -E chmod +x ./.temp/govc
 fi
 
-( ( az version || (curl -sL https://aka.ms/InstallAzureCLIDeb | sudo -E bash) ) && ( az account get-access-token || az login --use-device-code ) ) || { echo 'az installation or login failed' ; fail; }
+( ( az version || (curl -sL https://aka.ms/InstallAzureCLIDeb | sudo -E bash) ) && ( az account get-access-token || az login --identity ) ) || { echo 'az installation or login failed' ; fail; }
 
 for key in "${!AzExtensions[@]}"
 do
@@ -129,7 +129,7 @@ python3.8 -m venv .temp/.env || fail
 activate_python_venv
 python -m pip install --upgrade pip || fail
 python -m pip install -r ./appliance_setup/dependencies || fail
-python ./appliance_setup/run.py "$1" "$2" "${3:-INFO}"
+python ./appliance_setup/run.py "$1" "$2" "${3:-INFO}" "${4:-None}"
 operation_exit_code=$?
 print_operation_status_message $1 $operation_exit_code
 deactivate_python_venv

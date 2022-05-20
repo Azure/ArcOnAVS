@@ -2,7 +2,8 @@
 Param(
     [parameter(Mandatory=$true)][string]$Operation,
     [Parameter(Mandatory=$true)] [string] $FilePath,
-    [Parameter(Mandatory=$false)] [string] $LogLevel
+    [Parameter(Mandatory=$false)] [string] $LogLevel,
+    [Parameter(Mandatory=$false)] [string] $VmWareSPObjectID
 )
 
 $majorVersion = $PSVersionTable.PSVersion.Major
@@ -154,7 +155,7 @@ catch
 {
     Write-Host "Installing python..."
     Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.8/python-3.8.8-amd64.exe" -OutFile ".temp/python-3.8.8-amd64.exe"
-    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -ArgumentList '/quiet InstallAllUsers=0 PrependPath=1 Include_test=0'
+    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'
     $exitCode = $p.ExitCode
     if($exitCode -ne 0)
     {
@@ -197,7 +198,7 @@ else
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
     setPathForAzCliCert -config $config
-    az login --use-device-code
+    az login --identity
 }
 
 
@@ -206,7 +207,7 @@ foreach($x in $AzExtensions.GetEnumerator())
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath $LogLevel
+py .\appliance_setup\run.py $Operation $FilePath $LogLevel $VmWareSPObjectID
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
