@@ -1,7 +1,8 @@
 import json
 import logging
+import os
 import sys
-
+from datetime import datetime
 from avs._avs_orchestrator import AVSOrchestrator
 from avs.avsarconboarder.orchestrator.NSXOrchestrator._nsx_orchestrator import NSXOrchestor
 from avs.avsarconboarder.orchestrator._orchestrator import Orchestrator
@@ -17,6 +18,48 @@ from avs.avsarconboarder.entity.request.arc_addon_request import ArcAddonRequest
 from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreator
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
 from pkgs._utils import confirm_prompt
+
+def logger_setup(logLevel = logging.INFO):
+    log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+    LOG_DIR = "logs"
+    current_time = datetime.now()
+    LOG_FILE_ERROR = f'log_{current_time}.err'
+    LOG_FILE_INFO = f'log_{current_time}.info'
+    LOG_FILE_DEBUG = f'log_{current_time}.debug'
+
+    # Create logs directory if it does not already exist
+    os.mkdir(LOG_DIR)
+
+    # get the root logger
+    log = logging.getLogger()
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(log_formatter)
+    stream_handler.setLevel(logging.INFO)
+    log.addHandler(stream_handler)
+
+    # Critical, Error and Warning go to this file
+    if logLevel <= logging.WARNING:
+        file_handler_warning = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_ERROR), mode='a')
+        file_handler_warning.setFormatter(log_formatter)
+        file_handler_warning.setLevel(logging.WARNING)
+        log.addHandler(file_handler_warning)
+
+    # Info goes to this file
+    if logLevel <= logging.INFO:
+        file_handler_info = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_INFO), mode='a')
+        file_handler_info.setFormatter(log_formatter)
+        file_handler_info.setLevel(logging.INFO)
+        log.addHandler(file_handler_info)
+
+    # Debug goes to this file
+    if logLevel <= logging.DEBUG:
+        file_handler_debug = logging.FileHandler(os.path.join(LOG_DIR, LOG_FILE_DEBUG), mode='a')
+        file_handler_debug.setFormatter(log_formatter)
+        file_handler_debug.setLevel(logging.DEBUG)
+        log.addHandler(file_handler_debug)
+
+    log.setLevel(logLevel)
+
 
 def register_with_private_cloud(customer_resource, vcenterId: str):
     arc_addon_creator = ArcAddonCreator()
@@ -70,10 +113,7 @@ if __name__ == "__main__":
     if log_level not in log_level_dict.keys():
         raise InvalidOperation('Entered log level {} is not supported. Supported loglevels are {}'.format(log_level, log_level_dict.keys()))
 
-    logging.basicConfig(
-        format='%(asctime)s\t%(levelname)s\t%(message)s',
-        level=log_level_dict[log_level],
-        datefmt='%Y-%m-%dT%H:%M:%S')
+    logger_setup(log_level_dict[log_level])
 
     _populate_default_values_of_optional_fields_in_config(config)
 
