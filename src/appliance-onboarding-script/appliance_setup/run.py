@@ -22,13 +22,14 @@ from pkgs._utils import confirm_prompt
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     LOG_DIR = "logs"
-    current_time = datetime.now()
+    current_time = datetime.now().strftime('%Y-%m-%d-%H.%M.%S') # To avoid ":" in file names.
     LOG_FILE_ERROR = f'log_{current_time}.err'
     LOG_FILE_INFO = f'log_{current_time}.info'
     LOG_FILE_DEBUG = f'log_{current_time}.debug'
 
     # Create logs directory if it does not already exist
-    os.mkdir(LOG_DIR)
+    if not os.path.exists(LOG_DIR):
+        os.mkdir(LOG_DIR)
 
     # get the root logger
     log = logging.getLogger()
