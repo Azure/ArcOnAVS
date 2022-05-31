@@ -185,7 +185,7 @@ class ApplianceSetup(object):
                 '--config-file', 'vmware-appliance.yaml')
 
             if err:
-                raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again. The error is {}'.format(err))
+                raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again.')
             logging.info("arcappliance validate command succeeded")
 
     def _prepare_appliance(self):
