@@ -116,7 +116,7 @@ class ApplianceSetup(object):
         self._validate_appliance()
         self._prepare_appliance()
         appliance_id = self._deploy_and_create_appliance()
-        extension_id = self._create_or_delete_vmware_extension('create', self.default_vmware_sp_object_id)
+        extension_id = self._create_or_delete_vmware_extension('create', self._default_vmware_sp_object_id)
         if extension_id is not None:
             return self._arc_vmware_resources.create(appliance_id, extension_id)
 
@@ -161,7 +161,7 @@ class ApplianceSetup(object):
         except AzCommandError as e:
             logging.info(e)
         try:
-            self._create_or_delete_vmware_extension('delete', self.default_vmware_sp_object_id)
+            self._create_or_delete_vmware_extension('delete', self._default_vmware_sp_object_id)
         except AzCommandError as e:
             logging.info(e)
         self._delete_appliance()
