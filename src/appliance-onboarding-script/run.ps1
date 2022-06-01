@@ -198,7 +198,14 @@ else
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
     setPathForAzCliCert -config $config
-    az login --identity
+    if ($PSBoundParameters.ContainsKey('VmWareSPObjectID'))
+	{
+        az login --identity
+	}
+    else
+	{
+        az login --use-device-code
+	}
 }
 
 

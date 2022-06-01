@@ -109,7 +109,7 @@ then
   sudo -E chmod +x ./.temp/govc
 fi
 
-( ( az version || (curl -sL https://aka.ms/InstallAzureCLIDeb | sudo -E bash) ) && ( az account get-access-token || az login --identity ) ) || { echo 'az installation or login failed' ; fail; }
+( ( az version || (curl -sL https://aka.ms/InstallAzureCLIDeb | sudo -E bash) ) && ( az account get-access-token || az login --use-device-code ) ) || { echo 'az installation or login failed' ; fail; }
 
 for key in "${!AzExtensions[@]}"
 do
