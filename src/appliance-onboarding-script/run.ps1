@@ -2,7 +2,7 @@
 Param(
     [parameter(Mandatory=$true)][string]$Operation,
     [Parameter(Mandatory=$true)] [string] $FilePath,
-    [Parameter(Mandatory=$false)] [string] $LogLevel,
+    [Parameter(Mandatory=$false)] [string] $LogLevel = 'INFO',
     [Parameter(Mandatory=$false)] [bool] $isAutomated = $false, # isAutomated Parameter is set to true if it is an automation testing Run. 
                                                                 # In case this param is true, we use az login --identity, which logs in Azure VM's identity
                                                                 # and skips the confirm prompts.

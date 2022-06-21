@@ -178,7 +178,7 @@ if __name__ == "__main__":
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
         # Removing confirm_prompts for automated testing
-        if (isAutomated == True) or not confirm_prompt('Do you want to proceed with offboard operation?'):
+        if (isAutomated == False) and not confirm_prompt('Do you want to proceed with offboard operation?'):
             raise ProgramExit('User chose to exit the program.')
         if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
