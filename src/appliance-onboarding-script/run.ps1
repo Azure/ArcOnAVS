@@ -3,7 +3,10 @@ Param(
     [parameter(Mandatory=$true)][string]$Operation,
     [Parameter(Mandatory=$true)] [string] $FilePath,
     [Parameter(Mandatory=$false)] [string] $LogLevel,
-    [Parameter(Mandatory=$false)] [string] $VmWareSPObjectID
+    [Parameter(Mandatory=$false)] [bool] $isAutomated = $false, # isAutomated Parameter is set to true if it is an automation testing Run. 
+                                                                # In case this param is true, we use az login --identity, which logs in Azure VM's identity
+                                                                # and skips the confirm prompts.
+    [Parameter(Mandatory=$false)] [string] $VmWareSPObjectID # VmWareSPObjectID is the SP Object ID. This is passed down to the for setting up logs for connected vmware team.
 )
 
 $majorVersion = $PSVersionTable.PSVersion.Major
@@ -198,7 +201,7 @@ else
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
     setPathForAzCliCert -config $config
-    if ($PSBoundParameters.ContainsKey('VmWareSPObjectID'))
+    if ($isAutomated)
 	{
         az login --identity
 	}
@@ -214,7 +217,7 @@ foreach($x in $AzExtensions.GetEnumerator())
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath $LogLevel $VmWareSPObjectID
+py .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated $VmWareSPObjectID
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
