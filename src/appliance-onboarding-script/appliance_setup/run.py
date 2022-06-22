@@ -112,6 +112,9 @@ if __name__ == "__main__":
 
     try:
         input_vmware_sp_object_id = sys.argv[5] # Input VmWareSPObjectID is the SP Object ID. This is passed down to the for setting up logs for connected vmware team.
+        if(input_vmware_sp_object_id == ''): # This is required since shell script sends in an empty script for no param passed
+            input_vmware_sp_object_id = None
+
     except IndexError:
         input_vmware_sp_object_id = None
     

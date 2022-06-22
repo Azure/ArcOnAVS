@@ -130,7 +130,7 @@ activate_python_venv
 python -m pip install --upgrade pip || fail
 python -m pip install -r ./appliance_setup/dependencies || fail
 # TODO: Add support for automation testing in Linux Scripts.
-python ./appliance_setup/run.py "$1" "$2" "${3:-INFO}" "${4:-false}" "${5:-None}" 
+python ./appliance_setup/run.py "$1" "$2" "${3:-INFO}" "${4:-false}" "${5}" 
 operation_exit_code=$?
 print_operation_status_message $1 $operation_exit_code
 deactivate_python_venv
