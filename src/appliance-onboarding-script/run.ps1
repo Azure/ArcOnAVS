@@ -162,7 +162,7 @@ catch
     $exitCode = $p.ExitCode
     if($exitCode -ne 0)
     {
-        throw "Python installation failed with exit code $LASTEXITCODE"
+        throw "Python installation failed with exit code $exitCode"
     }
 }
 
