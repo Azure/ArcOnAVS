@@ -162,6 +162,8 @@ catch
     $exitCode = $p.ExitCode
     if($exitCode -ne 0)
     {
+        print ($p.StandardOutput)
+        print ($p.StandardError)
         throw "Python installation failed with exit code $exitCode"
     }
 }
