@@ -158,12 +158,10 @@ catch
 {
     Write-Host "Installing python..."
     Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.8/python-3.8.8-amd64.exe" -OutFile ".temp/python-3.8.8-amd64.exe"
-    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -ArgumentList 'InstallAllUsers=0 PrependPath=1 Include_test=0'
+    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -RedirectStandardOutput stdout.txt -RedirectStandardError stderr.txt -ArgumentList 'InstallAllUsers=0 PrependPath=1 Include_test=0'
     $exitCode = $p.ExitCode
     if($exitCode -ne 0)
     {
-        print ($p.StandardOutput)
-        print ($p.StandardError)
         throw "Python installation failed with exit code $exitCode"
     }
 }
