@@ -1,14 +1,15 @@
 {
-  "subscriptionId": "",
-  "resourceGroup": "",
-  "applianceControlPlaneIpAddress": "",
-  "privateCloud": "",
+  "subscriptionId": "7f1fae41-7708-4fa4-89b3-f6552cad2fc1",
+  "resourceGroup": "utbanerj_rg_sea",
+  "applianceControlPlaneIpAddress": "10.40.0.10",
+  "privateCloud": "utbanerj_test_private_cloud_sea",
   "isStatic": true,
   "staticIpNetworkDetails": {
-    "networkForApplianceVM": "",
-    "networkCIDRForApplianceVM": "",
-    "k8sNodeIPPoolStart": "",
-    "k8sNodeIPPoolEnd": "",
-    "gatewayIPAddress": ""
-  }
+    "networkForApplianceVM": "arc-seg-0",
+    "networkCIDRForApplianceVM": "10.40.0.1/24",
+    "k8sNodeIPPoolStart": "10.40.0.20",
+    "k8sNodeIPPoolEnd": "10.40.0.30",
+    "gatewayIPAddress": "10.40.0.1"
+  },
+  "location":"westeurope"
 }
