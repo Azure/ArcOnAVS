@@ -210,7 +210,7 @@ class ApplianceSetup(object):
             # Removing confirm_prompts for automated testing 
             # TODO Check what needs to be done in case there is a reachable ApiServer
             # For now, we consider the Api server to be correctly configured and don't deploy a new one.
-            if is_api_server_reachable and (self._isAutomated or not confirm_prompt(f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?')):
+            if (not self._isAutomated and (is_api_server_reachable and not confirm_prompt(f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?'))):
                 raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
