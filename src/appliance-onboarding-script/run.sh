@@ -2,9 +2,9 @@
 
 # Use empty string for the version to fetch latest CLI version
 declare -A AzExtensions=(
-    ["arcappliance"]="0.2.18"
-    ["connectedvmware"]="0.1.6"
-    ["k8s-extension"]="1.1.0"
+    ["arcappliance"]="0.2.24"
+    ["connectedvmware"]="0.1.7"
+    ["k8s-extension"]="1.2.3"
     ["customlocation"]="0.1.3")
 
 fail () {
