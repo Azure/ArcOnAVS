@@ -109,14 +109,6 @@ if __name__ == "__main__":
                                                       # and skip the confirm prompts.
     except IndexError:
         isAutomated = False;
-
-    try:
-        input_vmware_sp_object_id = sys.argv[5] # Input VmWareSPObjectID is the SP Object ID. This is passed down to the for setting up logs for connected vmware team.
-        if(input_vmware_sp_object_id == ''): # This is required since shell script sends in an empty script for no param passed
-            input_vmware_sp_object_id = None
-
-    except IndexError:
-        input_vmware_sp_object_id = None
     
     log_level_dict = {
         "DEBUG": logging.DEBUG,
@@ -171,7 +163,7 @@ if __name__ == "__main__":
                 dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
                 config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
         arc_vmware_res = ArcVMwareResources(config)
-        appliance_setup = ApplianceSetup(config, arc_vmware_res, isAutomated, input_vmware_sp_object_id)
+        appliance_setup = ApplianceSetup(config, arc_vmware_res, isAutomated)
 
         env_setup = VMwareEnvSetup(config)
         env_setup.setup()
@@ -186,7 +178,7 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             deregister_from_private_cloud(_customer_details.customer_resource)
         arc_vmware_res = ArcVMwareResources(config)
-        appliance_setup = ApplianceSetup(config, arc_vmware_res, isAutomated, input_vmware_sp_object_id)
+        appliance_setup = ApplianceSetup(config, arc_vmware_res, isAutomated)
         appliance_setup.delete()
     else:
         raise InvalidOperation(f"Invalid operation entered - {operation}")
