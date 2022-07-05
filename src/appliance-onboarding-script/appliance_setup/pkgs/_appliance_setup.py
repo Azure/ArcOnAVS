@@ -140,7 +140,7 @@ class ApplianceSetup(object):
             required_features_list = item['feature']
             namespace: str = item['namespace']
             if type(required_features_list) != list:
-                required_features_list = [required_features_list, ]
+                required_features_list = [required_features_list]
             required_features_list = [f'{namespace.lower()}/{x.lower()}' for x in required_features_list]
             res, err = az_cli('feature', 'list', '--namespace', f'"{namespace}"')
             if err:
