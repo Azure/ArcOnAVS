@@ -7,7 +7,8 @@ from ._exceptions import AzCommandError, InvalidOperation, ProgramExit, ArmFeatu
     ClusterExtensionCreationFailed, ArmProviderNotRegistered
 from ._az_cli import az_cli
 from ._azure_resource_validations import _wait_until_appliance_is_in_running_state
-from ._utils import TempChangeDir, confirm_prompt, decode_base64, delete_empty_sub_dicts, delete_unassigned_fields, get_value_using_path_in_dict, set_value_using_path_in_dict, create_dir_if_doesnot_exist, get_vm_snapshot_name
+from ._utils import TempChangeDir, confirm_prompt, decode_base64, delete_empty_sub_dicts, delete_unassigned_fields, \
+    get_value_using_path_in_dict, set_value_using_path_in_dict, create_dir_if_doesnot_exist, get_vm_snapshot_name
 from . import _templates as templates
 from shutil import copy
 from ._arcvmware_resources import ArcVMwareResources
@@ -15,7 +16,6 @@ import os
 
 
 class ApplianceSetup(object):
-
     _key_map: dict = {
         'vmware-appliance': {
             'applianceControlPlaneIpAddress': 'applianceClusterConfig.controlPlaneEndpoint',
@@ -76,7 +76,6 @@ class ApplianceSetup(object):
         }
     ]
 
-
     _config: dict
     _temp_dir: str = '.temp'
 
@@ -89,7 +88,7 @@ class ApplianceSetup(object):
     _default_release_train = "stable"
     _vmware_rp_sp_id = "ac9dc5fe-b644-4832-9d03-d9f1ab70c5f7"
 
-    def __init__(self, config: dict, arc_vmware_resources: ArcVMwareResources, isAutomated: bool, input_vmware_sp_object_id: String):
+    def __init__(self, config: dict, arc_vmware_resources: ArcVMwareResources, isAutomated: bool):
         self._config = config
         self._local_appliance_yaml: str = self._temp_dir + '/vmware-appliance.yaml'
         self._local_resource_yaml: str = self._temp_dir + '/vmware-resource.yaml'
@@ -97,7 +96,6 @@ class ApplianceSetup(object):
         self._local_vmware_extension: str = self._temp_dir + '/vmware-extension.json'
         self._arc_vmware_resources = arc_vmware_resources
         self._isAutomated = isAutomated
-        self._input_vmware_sp_object_id = input_vmware_sp_object_id
 
     def _copy_proxy_cert_update_config(self):
         config = self._config
@@ -142,7 +140,7 @@ class ApplianceSetup(object):
             required_features_list = item['feature']
             namespace: str = item['namespace']
             if type(required_features_list) != list:
-                required_features_list = [required_features_list,]
+                required_features_list = [required_features_list]
             required_features_list = [f'{namespace.lower()}/{x.lower()}' for x in required_features_list]
             res, err = az_cli('feature', 'list', '--namespace', f'"{namespace}"')
             if err:
@@ -152,7 +150,8 @@ class ApplianceSetup(object):
             registered_featues = list(map(lambda x: x['name'].lower(), registered_featues))
             if len(set(required_features_list).intersection(registered_featues)) < len(required_features_list):
                 required_features_list = item['feature']
-                raise ArmFeatureNotRegistered(f'All the features should be registered from list {required_features_list} under namespace {namespace}')
+                raise ArmFeatureNotRegistered(
+                    f'All the features should be registered from list {required_features_list} under namespace {namespace}')
 
     def delete(self):
         self._create_template_files()
@@ -184,7 +183,7 @@ class ApplianceSetup(object):
 
             logging.info('Validating appliance config...')
             res, err = az_cli('arcappliance', 'validate', 'vmware',
-                '--config-file', 'vmware-appliance.yaml')
+                              '--config-file', 'vmware-appliance.yaml')
 
             if err:
                 raise AzCommandError('arcappliance Validate command failed. Fix the configuration and try again.')
@@ -195,8 +194,8 @@ class ApplianceSetup(object):
             config = self._config
 
             logging.info('Preparing appliance...')
-            res, err = az_cli( 'arcappliance', 'prepare', 'vmware',
-                '--config-file', 'vmware-appliance.yaml')
+            res, err = az_cli('arcappliance', 'prepare', 'vmware',
+                              '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance prepare command failed.')
 
@@ -210,12 +209,13 @@ class ApplianceSetup(object):
             # Removing confirm_prompts for automated testing 
             # TODO Check what needs to be done in case there is a reachable ApiServer
             # For now, we consider the Api server to be correctly configured and don't deploy a new one.
-            if (not self._isAutomated and (is_api_server_reachable and not confirm_prompt(f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?'))):
+            if (not self._isAutomated and (is_api_server_reachable and not confirm_prompt(
+                    f'An ApiServer is already reachable on endpoint {apiserver_address}. Deployment will be skipped. Do you want to continue?'))):
                 raise ProgramExit('User chose to exit the program.')
             if not is_api_server_reachable:
                 logging.info('Deploying appliance...')
                 res, err = az_cli('arcappliance', 'deploy', 'vmware',
-                    '--config-file', 'vmware-appliance.yaml')
+                                  '--config-file', 'vmware-appliance.yaml')
                 if err:
                     # Removing confirm_prompts for automated testing
                     # Considering if deploy command fails, we fail the automation
@@ -231,8 +231,8 @@ class ApplianceSetup(object):
 
             logging.info('Create appliance ARM resource...')
             res, err = az_cli('arcappliance', 'create', 'vmware',
-                '--config-file', 'vmware-appliance.yaml',
-                '--kubeconfig', 'kubeconfig')
+                              '--config-file', 'vmware-appliance.yaml',
+                              '--kubeconfig', 'kubeconfig')
             if err:
                 raise AzCommandError('arcappliance create command failed.')
             logging.info("Successfully provisioned arcappliance arm resource.")
@@ -255,12 +255,11 @@ class ApplianceSetup(object):
         if err:
             raise AzCommandError('Default subscription set command failed.')
 
-
     def _delete_appliance(self):
         with TempChangeDir(self._temp_dir):
             logging.info('Deleting appliance...')
             res, err = az_cli('arcappliance', 'delete', 'vmware', '-y',
-                '--config-file', 'vmware-appliance.yaml')
+                              '--config-file', 'vmware-appliance.yaml')
             if err:
                 raise AzCommandError('arcappliance delete command failed.')
             logging.info("arcappliance delete command succeeded")
@@ -284,36 +283,25 @@ class ApplianceSetup(object):
         except KeyError:
             pass
 
-        if self._input_vmware_sp_object_id is None:
-            vmware_rp_sp, err = az_cli('ad', 'sp', 'show', '--id', f'"{self._vmware_rp_sp_id}"')
-            if err:
-                raise AzCommandError("Unable to get VMware SP object id.")
-
-            vmware_rp_sp = json.loads(vmware_rp_sp)
-            vmware_rp_object_id = vmware_rp_sp["objectId"]
-        else:
-            vmware_rp_object_id = self._input_vmware_sp_object_id
-
         res = None
         if op == 'create':
-            
+
             logging.info('Creating VMware extension...')
 
             _wait_until_appliance_is_in_running_state(config)
 
             res, err = az_cli('k8s-extension', 'create',
-                '-n', name,
-                '-g', rg,
-                '--cluster-name', f'"{appliance_name}"',
-                '--cluster-type', 'appliances',
-                '--scope', 'cluster',
-                '--extension-type', f'"{extension_type}"',
-                '--release-train', f'"{release_train}"',
-                '--release-namespace', f'"{name}"',
-                '--auto-upgrade', 'true',
-                '--config', 'Microsoft.CustomLocation.ServiceAccount=azure-vmwareoperator'
-                '--config', f'global.rpObjectId="{vmware_rp_object_id}"'
-            )
+                              '-n', name,
+                              '-g', rg,
+                              '--cluster-name', f'"{appliance_name}"',
+                              '--cluster-type', 'appliances',
+                              '--scope', 'cluster',
+                              '--extension-type', f'"{extension_type}"',
+                              '--release-train', f'"{release_train}"',
+                              '--release-namespace', f'"{name}"',
+                              '--auto-upgrade', 'true',
+                              '--config', 'Microsoft.CustomLocation.ServiceAccount=azure-vmwareoperator'
+                              )
             if err:
                 raise AzCommandError(f'Create k8s-extension instance failed.')
 
@@ -335,11 +323,11 @@ class ApplianceSetup(object):
         else:
             logging.info('Deleting VMware extension...')
             _, err = az_cli('k8s-extension', 'delete', '-y',
-                '-n', 'azure-vmwareoperator',
-                '-g', f'"{rg}"',
-                '--cluster-name', f'"{appliance_name}"',
-                '--cluster-type', 'appliances',
-            )
+                            '-n', 'azure-vmwareoperator',
+                            '-g', f'"{rg}"',
+                            '--cluster-name', f'"{appliance_name}"',
+                            '--cluster-type', 'appliances',
+                            )
             if err:
                 raise AzCommandError(f'Delete k8s-extension instance failed.')
             logging.info("Delete k8s-extension instance command succeeded")
@@ -374,7 +362,7 @@ class ApplianceSetup(object):
         self._delete_keys_if_empty()
         self._copy_proxy_cert_update_config()
         config = self._config
-        #TODO Remove workaround as soon as appliance is fixed
+        # TODO Remove workaround as soon as appliance is fixed
         config['vCenterAddress'] = config['vCenterFQDN']
         appliance: dict = None
         infra: dict = None
@@ -429,4 +417,3 @@ class ApplianceSetup(object):
         with open(self._local_infra_yaml, 'w') as f:
             t = yaml.safe_dump(infra)
             f.write(t)
-

@@ -3,10 +3,9 @@ Param(
     [parameter(Mandatory=$true)][string]$Operation,
     [Parameter(Mandatory=$true)] [string] $FilePath,
     [Parameter(Mandatory=$false)] [string] $LogLevel = 'INFO',
-    [Parameter(Mandatory=$false)] [bool] $isAutomated = $false, # isAutomated Parameter is set to true if it is an automation testing Run. 
+    [Parameter(Mandatory=$false)] [bool] $isAutomated = $false # isAutomated Parameter is set to true if it is an automation testing Run.
                                                                 # In case this param is true, we use az login --identity, which logs in Azure VM's identity
                                                                 # and skips the confirm prompts.
-    [Parameter(Mandatory=$false)] [string] $VmWareSPObjectID # VmWareSPObjectID is the SP Object ID. This is passed down to the for setting up logs for connected vmware team.
 )
 
 $majorVersion = $PSVersionTable.PSVersion.Major
@@ -194,7 +193,7 @@ if(![string]::IsNullOrEmpty($config.proxyDetails) -and ![string]::IsNullOrEmpty(
 else
 {
     py -m pip install --upgrade pip
-    py -m pip install azure-cli==2.36.0
+    py -m pip install azure-cli
     py -m pip install -r .\appliance_setup\dependencies
 }
 
@@ -217,7 +216,7 @@ foreach($x in $AzExtensions.GetEnumerator())
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated $VmWareSPObjectID
+py .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
