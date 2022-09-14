@@ -2,7 +2,6 @@ from avs.avsarconboarder.entity.CustomerResource import CustomerResource
 from avs.avsarconboarder.exception import InvalidInputError
 from avs.avsarconboarder.retriever.cloud_data.cloud_data_retriever import CloudDataRetriever
 
-
 class ConfigValidator:
     def __init__(self, config):
         self.__config = config
@@ -14,13 +13,7 @@ class ConfigValidator:
             raise InvalidInputError("staticIpNetworkDetails.networkForApplianceVM is a required configuration")
         if "networkCIDRForApplianceVM" not in self.__config["staticIpNetworkDetails"]:
             raise InvalidInputError("staticIpNetworkDetails.networkCIDRForApplianceVM is a required configuration")
-        if "k8sNodeIPPoolStart" not in self.__config["staticIpNetworkDetails"]:
-            raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolStart is a required configuration")
-        if "k8sNodeIPPoolEnd" not in self.__config["staticIpNetworkDetails"]:
-            raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolEnd is a required configurations")
-        if "gatewayIPAddress" not in self.__config["staticIpNetworkDetails"]:
-            raise InvalidInputError("staticIpNetworkDetails.gatewayIPAddress is a required configuration")
-
+    
     def validate_dhcp_nw_config(self):
         if "DHCPNetworkDetails" not in self.__config:
             raise InvalidInputError("DHCPNetworkDetails is a required configuration")
