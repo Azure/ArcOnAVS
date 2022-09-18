@@ -1,10 +1,10 @@
 {
-  "subscriptionId": "60d6b3c7-5ae0-4491-8ea3-3caf8d7afc4c",
-  "resourceGroup": "arc-for-avs-sea-rg",
-  "privateCloud": "arc-for-avs-sea",
+  "subscriptionId": "",
+  "resourceGroup": "",
+  "privateCloud": "",
   "isStatic": true,
   "staticIpNetworkDetails": {
-    "networkForApplianceVM": "arc-segmant",
-    "networkCIDRForApplianceVM": "171.1.1.1/28"
+    "networkForApplianceVM": "",
+    "networkCIDRForApplianceVM": ""
   }
 }

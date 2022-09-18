@@ -138,11 +138,6 @@ if __name__ == "__main__":
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
 
-        print(config["applianceControlPlaneIpAddress"]) 
-        print(config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
-        print(config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
-        print(config["staticIpNetworkDetails"]["gatewayIPAddress"])
-
         # TODO: Remove the Condition check after internal testing.
         #  This condition allows the user specified location to be use for creating RB, CL resources.
         #  If not sepecified the private cloud's location is used. This is the expected behavior.
