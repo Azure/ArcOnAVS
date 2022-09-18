@@ -17,18 +17,19 @@ class NetworkOrchestrator(Orchestrator):
         cidr = segmant_ip_cidr[char_index - len(segmant_ip_cidr) + 1:]
         if int(cidr) != 28:
             raise InvalidInputError("Invalid segamnt block size provided, Please provide a /28 address")
-
-        subnet_first_ip_addr       = ipaddress.IPv4Address(gateway_ip) - 1
-        self.list_of_ip_addr_in_segment = list(ipaddress.ip_network('{}/{}'.format(subnet_first_ip_addr,cidr)).hosts())
         
-        if ipaddress.IPv4Address(gateway_ip) != self.list_of_ip_addr_in_segment[0]:
+        try:
+            subnet_first_ip_addr = ipaddress.IPv4Address(gateway_ip) - 1
+            self.list_of_ip_addr_in_segment = list(ipaddress.ip_network('{}/{}'.format(subnet_first_ip_addr,cidr)).hosts())
+        except:
             raise InvalidInputError("Invalid gateway ip provided, please provide a segmant with first gateway ip")          
     
     def populate_network_config(self, config):
         print(self.list_of_ip_addr_in_segment)
-        config["staticIpNetworkDetails"]["applianceControlPlaneIpAddress"]  = str(self.list_of_ip_addr_in_segment[1])
+        config["applianceControlPlaneIpAddress"]  = str(self.list_of_ip_addr_in_segment[1])
         config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"]  = str(self.list_of_ip_addr_in_segment[10])
         config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"] = str(self.list_of_ip_addr_in_segment[13])
+        config["staticIpNetworkDetails"]["gatewayIPAddress"] = str(self.list_of_ip_addr_in_segment[0])
 
     def orchestrate(self, *args):
         config = args[0]

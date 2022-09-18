@@ -10,6 +10,12 @@
 *.userosscache
 *.sln.docstates
 
+#python compiled files
+*.pyc
+
+#python temp files
+.temp/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
