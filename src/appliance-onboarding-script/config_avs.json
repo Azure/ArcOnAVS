@@ -1,10 +1,14 @@
 {
   "subscriptionId": "",
   "resourceGroup": "",
+  "applianceControlPlaneIpAddress": "",
   "privateCloud": "",
   "isStatic": true,
   "staticIpNetworkDetails": {
     "networkForApplianceVM": "",
-    "networkCIDRForApplianceVM": ""
+    "networkCIDRForApplianceVM": "",
+    "k8sNodeIPPoolStart": "",
+    "k8sNodeIPPoolEnd": "",
+    "gatewayIPAddress": ""
   }
 }

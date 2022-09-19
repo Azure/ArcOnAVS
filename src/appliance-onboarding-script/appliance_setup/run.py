@@ -131,7 +131,7 @@ if __name__ == "__main__":
         avs_config_validator = ConfigValidator(config)
         avs_config_validator.validate_avs_config()
 
-        if "applianceControlPlaneIpAddress" not in config:
+        if not config["applianceControlPlaneIpAddress"].strip():
             network_orchestrator: Orchestrator = NetworkOrchestrator()
             network_orchestrator.orchestrate(config)
 
