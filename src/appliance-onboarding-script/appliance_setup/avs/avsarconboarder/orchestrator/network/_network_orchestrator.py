@@ -13,6 +13,11 @@ class NetworkOrchestrator(Orchestrator):
         while char_index < len(segmant_ip_cidr) and segmant_ip_cidr[char_index] != '/':
             gateway_ip += segmant_ip_cidr[char_index]
             char_index += 1
+        
+        try:
+            ipaddress.ip_address(gateway_ip)
+        except:
+            raise InvalidInputError("Invalid ip address provided")
 
         cidr = segmant_ip_cidr[char_index - len(segmant_ip_cidr) + 1:]
         if int(cidr) != 28:
@@ -24,6 +29,13 @@ class NetworkOrchestrator(Orchestrator):
         except:
             raise InvalidInputError("Invalid gateway ip provided, please provide a segmant with first gateway ip")          
     
+    '''
+    gateway ip = 2nd ip of cidr = 10.0.0.(xxxx 0001)
+    control plane IP address = 3rd ip of cidr = 10.0.0.(xxxx 0002)
+    nodepool range = 11th to 15th ip = 10.0.0.(xxxx 1010) - 10.0.0.(xxxx 1110)  
+    Buffer / Free IPs  = 4th to 10th Ip = 10.0.0.(xxxx 0011) - 10.0.0.(xxxx 1001)
+    1st and 16th ip are reserved for special purpose in nsx-t segment
+    '''
     def populate_network_config(self, config):
         print(self.list_of_ip_addr_in_segment)
         config["applianceControlPlaneIpAddress"]  = str(self.list_of_ip_addr_in_segment[1])

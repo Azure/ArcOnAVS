@@ -2,6 +2,7 @@ from avs.avsarconboarder.entity.CustomerResource import CustomerResource
 from avs.avsarconboarder.exception import InvalidInputError
 from avs.avsarconboarder.retriever.cloud_data.cloud_data_retriever import CloudDataRetriever
 
+
 class ConfigValidator:
     def __init__(self, config):
         self.__config = config
