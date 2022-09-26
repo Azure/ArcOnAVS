@@ -31,3 +31,5 @@ CLUSTER_SIZE = "cluster_size"
 VNET_IP_CIDR = "VNET_IP_CIDR"
 DNS_SERVICE_IP = "DNS_Service_IP"
 VALID_LOCATIONS = "westeurope,eastus,australiaeast,canadacentral"
+OLD_CONFIG_VERSION = 0
+NEW_CONFIG_VERSION = 1

@@ -1,17 +1,46 @@
+from operator import truediv
 from avs.avsarconboarder.entity.CustomerResource import CustomerResource
+from avs.avsarconboarder.orchestrator.network._network_orchestrator import NetworkOrchestrator
 from avs.avsarconboarder.exception import InvalidInputError
 from avs.avsarconboarder.retriever.cloud_data.cloud_data_retriever import CloudDataRetriever
-
+import ipaddress
+from avs.avsarconboarder.constants import Constant
 
 class ConfigValidator:
     def __init__(self, config):
         self.__config = config
+        self._network_orchestrator = NetworkOrchestrator()
 
+    def validate_old_version_static_ip_nw_config(self):
+        self._network_orchestrator.validate_ip_address(self.__config["applianceControlPlaneIpAddress"])
+        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.OLD_CONFIG_VERSION)
+        self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
+        self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
+        self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["gatewayIPAddress"])
+
+    def validate_new_version_static_ip_nw_config(self):
+        if self.__config["applianceControlPlaneIpAddress"].strip():
+            raise InvalidInputError("applianceControlPlaneIpAddress value should be empty in new config")
+        if self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"].strip():
+            raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolStart value should should be empty in new config")
+        if self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"].strip():
+            raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolEnd value should be empty in new config")    
+        if self.__config["staticIpNetworkDetails"]["gatewayIPAddress"].strip():
+            raise InvalidInputError("staticIpNetworkDetails.gatewayIPAddress value should be empty in new config")
+        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.NEW_CONFIG_VERSION)
+        
     def validate_static_ip_nw_config(self):
+        if "applianceControlPlaneIpAddress" not in self.__config:
+            raise InvalidInputError("applianceControlPlaneIpAddress is a required configuration")    
         if "staticIpNetworkDetails" not in self.__config:
             raise InvalidInputError("staticIpNetworkDetails is a required configuration")
+
         if "networkForApplianceVM" not in self.__config["staticIpNetworkDetails"]:
             raise InvalidInputError("staticIpNetworkDetails.networkForApplianceVM is a required configuration")
+        else:
+            if not self.__config["staticIpNetworkDetails"]["networkForApplianceVM"].strip():
+                raise InvalidInputError("staticIpNetworkDetails.networkForApplianceVM is empty")
+
         if "networkCIDRForApplianceVM" not in self.__config["staticIpNetworkDetails"]:
             raise InvalidInputError("staticIpNetworkDetails.networkCIDRForApplianceVM is a required configuration")
         if "k8sNodeIPPoolStart" not in self.__config["staticIpNetworkDetails"]:
@@ -20,7 +49,12 @@ class ConfigValidator:
             raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolEnd is a required configurations")
         if "gatewayIPAddress" not in self.__config["staticIpNetworkDetails"]:
             raise InvalidInputError("staticIpNetworkDetails.gatewayIPAddress is a required configuration")
-
+        
+        if self.__config["applianceControlPlaneIpAddress"].strip():
+            self.validate_old_version_static_ip_nw_config()
+        else:
+            self.validate_new_version_static_ip_nw_config()
+        
     def validate_dhcp_nw_config(self):
         if "DHCPNetworkDetails" not in self.__config:
             raise InvalidInputError("DHCPNetworkDetails is a required configuration")
@@ -73,6 +107,11 @@ class ConfigValidator:
         # is selected, i.e, if the config isStatic is false
         if "isStatic" in self.__config and not self.__config["isStatic"]:
             raise InvalidInputError("isStatic should be true. Only Static IP configuration is supported currently")
+
+    def get_config_version(self):
+        if self.__config["applianceControlPlaneIpAddress"].strip():
+            return Constant.OLD_CONFIG_VERSION
+        return Constant.NEW_CONFIG_VERSION
 
     def validate_avs_config(self):
         self.validate_nw_config()
