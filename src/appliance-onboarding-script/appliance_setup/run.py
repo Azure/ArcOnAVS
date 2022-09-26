@@ -132,15 +132,10 @@ if __name__ == "__main__":
         avs_config_validator.validate_avs_config()
 
         version = avs_config_validator.get_config_version()
-        print(version)
+      
         if(version == Constant.NEW_CONFIG_VERSION):
             network_orchestrator: Orchestrator = NetworkOrchestrator()
             network_orchestrator.orchestrate(config)
-
-        print(config["applianceControlPlaneIpAddress"])
-        print(config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
-        print(config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
-        print(config["staticIpNetworkDetails"]["gatewayIPAddress"])
 
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
@@ -156,7 +151,7 @@ if __name__ == "__main__":
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
-'''
+
     if operation == 'onboard':
         if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
@@ -195,4 +190,3 @@ if __name__ == "__main__":
         appliance_setup.delete()
     else:
         raise InvalidOperation(f"Invalid operation entered - {operation}")
-'''
