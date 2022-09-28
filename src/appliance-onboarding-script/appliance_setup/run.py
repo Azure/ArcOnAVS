@@ -13,7 +13,7 @@ from avs.avsarconboarder.utils.utils import validate_region
 from avs.converter._converter import Converter
 from avs.converter.nsx.nsx_converter import DHCPConverter, SegmentConverter
 from pkgs import ApplianceSetup, VMwareEnvSetup, ArcVMwareResources
-from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion, ProgramExit
+from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion, ProgramExit, InvalidInputError
 from avs.avsarconboarder.entity.request.arc_addon_request import ArcAddonRequest
 from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreator
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
@@ -61,11 +61,9 @@ def logger_setup(logLevel = logging.INFO):
 
     log.setLevel(logLevel)
 
-
 def register_with_private_cloud(customer_resource, vcenterId: str):
     arc_addon_creator = ArcAddonCreator()
     arc_addon_creator.create(customer_resource, ArcAddonRequest("Arc", vcenterId))
-
 
 def deregister_from_private_cloud(customer_resource):
     arc_addon_deleter = ArcAddonDeleter()
@@ -144,7 +142,12 @@ if __name__ == "__main__":
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
+        arc_addon_creator = ArcAddonCreator()
+        onboard_state =  arc_addon_creator.check_if_arc_onboarded_on_cloud(_customer_details.customer_resource)
+
     if operation == 'onboard':
+        if onboard_state == True:
+            raise InvalidInputError("Cannot Onboard. SDDC is already Arc Onboarded")
         if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
@@ -172,6 +175,8 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
+        if onboard_state == False:
+            raise InvalidInputError("Cannot Offboard. SDDC is not Arc Onboarded")
         # Removing confirm_prompts for automated testing
         if (isAutomated == False) and not confirm_prompt('Do you want to proceed with offboard operation?'):
             raise ProgramExit('User chose to exit the program.')
