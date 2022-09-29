@@ -142,12 +142,12 @@ if __name__ == "__main__":
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
+    if operation == 'onboard':
         arc_addon_creator = ArcAddonCreator()
         onboard_state =  arc_addon_creator.check_if_arc_onboarded_on_cloud(_customer_details.customer_resource)
-
-    if operation == 'onboard':
         if onboard_state == True:
             raise InvalidInputError("Cannot Onboard. SDDC is already Arc Onboarded")
+            
         if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
@@ -175,9 +175,7 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
-        if onboard_state == False:
-            raise InvalidInputError("Cannot Offboard. SDDC is not Arc Onboarded")
-        # Removing confirm_prompts for automated testing
+       # Removing confirm_prompts for automated testing
         if (isAutomated == False) and not confirm_prompt('Do you want to proceed with offboard operation?'):
             raise ProgramExit('User chose to exit the program.')
         if config["isAVS"] and config["register"]:
