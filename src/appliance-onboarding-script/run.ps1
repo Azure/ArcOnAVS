@@ -193,7 +193,7 @@ if(![string]::IsNullOrEmpty($config.proxyDetails) -and ![string]::IsNullOrEmpty(
 else
 {
     py -m pip install --upgrade pip
-    py -m pip install azure-cli
+    py -m pip install azure-cli==2.39.0
     py -m pip install -r .\appliance_setup\dependencies
 }
 
