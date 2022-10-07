@@ -5,18 +5,24 @@ from avs.avsarconboarder.exception import InvalidInputError
 from avs.avsarconboarder.retriever.cloud_data.cloud_data_retriever import CloudDataRetriever
 import ipaddress
 from avs.avsarconboarder.constants import Constant
+from ..processor.nsx.helper import _NSXSegmentHelper
 
 class ConfigValidator:
     def __init__(self, config):
         self.__config = config
         self._network_orchestrator = NetworkOrchestrator()
-
+        self._segment_helper = _NSXSegmentHelper.NSXSegmentHelper()
+        
     def validate_old_version_static_ip_nw_config(self):
         self._network_orchestrator.validate_ip_address(self.__config["applianceControlPlaneIpAddress"])
         self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.OLD_CONFIG_VERSION)
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["gatewayIPAddress"])
+        
+        gateway_ip_from_cidr = self._network_orchestrator.get_gateway_address_cidr_from_network_addr(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
+        if gateway_ip_from_cidr != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
+            raise InvalidInputError("Gateway IP in config and gateway of segmant do not match")
 
     def validate_new_version_static_ip_nw_config(self):
         if self.__config["applianceControlPlaneIpAddress"].strip():
@@ -49,7 +55,7 @@ class ConfigValidator:
             raise InvalidInputError("staticIpNetworkDetails.k8sNodeIPPoolEnd is a required configurations")
         if "gatewayIPAddress" not in self.__config["staticIpNetworkDetails"]:
             raise InvalidInputError("staticIpNetworkDetails.gatewayIPAddress is a required configuration")
-        
+
         if self.__config["applianceControlPlaneIpAddress"].strip():
             self.validate_old_version_static_ip_nw_config()
         else:
@@ -113,6 +119,23 @@ class ConfigValidator:
             return Constant.OLD_CONFIG_VERSION
         return Constant.NEW_CONFIG_VERSION
 
+    def validate_segmant_details_config(self, customer_resource):
+        customer_res: CustomerResource = customer_resource
+        res = self._segment_helper.get_segment_list(customer_res.subscription_id, 
+                                                    customer_res.resource_group, customer_res.private_cloud)
+        
+        segment_in_config = self.__config["staticIpNetworkDetails"]["networkForApplianceVM"]
+        segment_cidr_in_config = self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"]
+        for segment in res["value"]:
+            if segment["name"].casefold() == segment_in_config.casefold():
+                if segment["properties"]["subnet"]["gatewayAddress"] != segment_cidr_in_config:
+                    raise InvalidInputError("Segment {} already exists with a different ip cidr".format(segment_in_config))
+
+        for segment in res:
+            if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
+                if segment["name"].casefold() != segment_in_config.casefold():
+                    raise InvalidInputError("A different segment already present with ip cider {}".format(segment_cidr_in_config))
+     
     def validate_avs_config(self):
         self.validate_nw_config()
         self.validate_azure_details()

@@ -140,13 +140,14 @@ if __name__ == "__main__":
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
 
+        avs_config_validator.validate_segmant_details_config(_customer_details.customer_resource)
+
         # TODO: Remove the Condition check after internal testing.
         #  This condition allows the user specified location to be use for creating RB, CL resources.
         #  If not sepecified the private cloud's location is used. This is the expected behavior.
         #  The former is enabled only to speed up internal testing
         if Constant.LOCATION not in config:
             config[Constant.LOCATION] = _customer_details.cloud_details[Constant.LOCATION]
-
 
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):
