@@ -131,10 +131,10 @@ class ConfigValidator:
                 if segment["properties"]["subnet"]["gatewayAddress"] != segment_cidr_in_config:
                     raise InvalidInputError("Segment {} already exists with a different ip cidr".format(segment_in_config))
 
-        for segment in res:
+        for segment in res["value"]:
             if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
                 if segment["name"].casefold() != segment_in_config.casefold():
-                    raise InvalidInputError("A different segment already present with ip cider {}".format(segment_cidr_in_config))
+                    raise InvalidInputError("A different segment already present with ip cidr {}".format(segment_cidr_in_config))
      
     def validate_avs_config(self):
         self.validate_nw_config()
