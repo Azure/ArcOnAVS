@@ -11,8 +11,8 @@ class NetworkOrchestrator(Orchestrator):
         except:
             raise InvalidInputError("Invalid ip addresses provided")
 
-    def validate_static_ip_cidr_block(self, segmant_ip_cidr, version):
-        gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segmant_ip_cidr)
+    def validate_static_ip_cidr_block(self, segment_ip_cidr, version):
+        gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segment_ip_cidr)
         self.validate_ip_address(gateway_ip)
         
         if version == Constant.NEW_CONFIG_VERSION:
@@ -23,16 +23,16 @@ class NetworkOrchestrator(Orchestrator):
             try:
                 ipaddress.ip_network('{}/{}'.format(subnet_first_ip_addr,cidr))
             except:
-                raise InvalidInputError("Invalid gateway ip provided, please provide a segmant with first gateway ip")          
+                raise InvalidInputError("Invalid gateway ip provided, please provide a segment with first gateway ip")          
         
-    def get_gateway_address_cidr_from_network_addr(self, segmant_ip_cidr):
+    def get_gateway_address_cidr_from_network_addr(self, segment_ip_cidr):
         char_index = 0
         gateway_ip = ""
-        while char_index < len(segmant_ip_cidr) and segmant_ip_cidr[char_index] != '/':
-            gateway_ip += segmant_ip_cidr[char_index]
+        while char_index < len(segment_ip_cidr) and segment_ip_cidr[char_index] != '/':
+            gateway_ip += segment_ip_cidr[char_index]
             char_index += 1
 
-        cidr = segmant_ip_cidr[char_index - len(segmant_ip_cidr) + 1:]
+        cidr = segment_ip_cidr[char_index - len(segment_ip_cidr) + 1:]
 
         return gateway_ip, cidr
 

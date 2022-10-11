@@ -22,7 +22,7 @@ class ConfigValidator:
         
         gateway_ip_from_cidr = self._network_orchestrator.get_gateway_address_cidr_from_network_addr(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
         if gateway_ip_from_cidr != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
-            raise InvalidInputError("Gateway IP in config and gateway of segmant do not match")
+            raise InvalidInputError("Gateway IP in config and gateway of segment do not match")
 
     def validate_new_version_static_ip_nw_config(self):
         if self.__config["applianceControlPlaneIpAddress"].strip():
@@ -119,7 +119,7 @@ class ConfigValidator:
             return Constant.OLD_CONFIG_VERSION
         return Constant.NEW_CONFIG_VERSION
 
-    def validate_segmant_details_config(self, customer_resource):
+    def validate_segment_details_config(self, customer_resource):
         customer_res: CustomerResource = customer_resource
         res = self._segment_helper.get_segment_list(customer_res.subscription_id, 
                                                     customer_res.resource_group, customer_res.private_cloud)

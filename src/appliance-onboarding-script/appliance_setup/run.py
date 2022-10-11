@@ -140,7 +140,7 @@ if __name__ == "__main__":
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
 
-        avs_config_validator.validate_segmant_details_config(_customer_details.customer_resource)
+        avs_config_validator.validate_segment_details_config(_customer_details.customer_resource)
 
         # TODO: Remove the Condition check after internal testing.
         #  This condition allows the user specified location to be use for creating RB, CL resources.
