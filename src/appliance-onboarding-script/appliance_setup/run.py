@@ -137,14 +137,12 @@ if __name__ == "__main__":
         if Constant.LOCATION not in config:
             config[Constant.LOCATION] = _customer_details.cloud_details[Constant.LOCATION]
 
-
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
     if operation == 'onboard':
-        arc_addon_creator = ArcAddonCreator()
-        onboard_state =  arc_addon_creator.check_if_arc_onboarded_on_cloud(_customer_details.customer_resource)
+        onboard_state =  avs_orchestrator.check_if_arc_onboarded_on_cloud(_customer_details.customer_resource)
         if onboard_state == True:
             raise InvalidInputError("Cannot Onboard. SDDC is already Arc Onboarded")
             
@@ -175,7 +173,7 @@ if __name__ == "__main__":
         if config["isAVS"] and config["register"]:
             register_with_private_cloud(_customer_details.customer_resource, vcenterId)
     elif operation == 'offboard':
-       # Removing confirm_prompts for automated testing
+        # Removing confirm_prompts for automated testing
         if (isAutomated == False) and not confirm_prompt('Do you want to proceed with offboard operation?'):
             raise ProgramExit('User chose to exit the program.')
         if config["isAVS"] and config["register"]:
