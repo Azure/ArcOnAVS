@@ -17,7 +17,7 @@ class NetworkOrchestrator(Orchestrator):
         
         if version == Constant.NEW_CONFIG_VERSION:
             if int(cidr) != 28:
-                raise InvalidInputError("Invalid segamnt block size provided, Please provide a /28 address")
+                raise InvalidInputError("Invalid segment block size provided, Please provide a /28 address")
             
             subnet_first_ip_addr = ipaddress.IPv4Address(gateway_ip) - 1
             try:
