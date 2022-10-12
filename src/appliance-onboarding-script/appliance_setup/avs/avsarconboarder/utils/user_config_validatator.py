@@ -19,8 +19,8 @@ class ConfigValidator:
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["gatewayIPAddress"])
         
-        gateway_ip_from_cidr = self._network_orchestrator.get_gateway_address_cidr_from_network_addr(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
-        if gateway_ip_from_cidr != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
+        gateway_ip_cidr = self._network_orchestrator.get_gateway_address_cidr_from_network_addr(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
+        if gateway_ip_cidr[0] != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
             raise InvalidInputError("Gateway IP in config and gateway of segment do not match")
 
     def validate_new_version_static_ip_nw_config(self):
