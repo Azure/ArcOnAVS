@@ -12,9 +12,9 @@ class ConfigValidator:
         self._network_orchestrator = NetworkOrchestrator()
         self._segment_helper = _NSXSegmentHelper.NSXSegmentHelper()
         
-    def validate_old_version_static_ip_nw_config(self):
+    def validate_static_ip_nw_config_v1(self):
         self._network_orchestrator.validate_ip_address(self.__config["applianceControlPlaneIpAddress"])
-        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.OLD_CONFIG_VERSION)
+        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.CONFIG_VERSION_V1)
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["gatewayIPAddress"])
@@ -23,9 +23,9 @@ class ConfigValidator:
         if gateway_ip_cidr[0] != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
             raise InvalidInputError("Gateway IP in config and gateway of segment do not match")
 
-    def validate_new_version_static_ip_nw_config(self):
-        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.NEW_CONFIG_VERSION)
-        
+    def validate_static_ip_nw_config_v2(self):
+        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.CONFIG_VERSION_V2)
+ 
     def validate_static_ip_nw_config(self):
         if "applianceControlPlaneIpAddress" not in self.__config:
             raise InvalidInputError("applianceControlPlaneIpAddress is a required configuration")    
@@ -43,10 +43,10 @@ class ConfigValidator:
             raise InvalidInputError("staticIpNetworkDetails.gatewayIPAddress is a required configuration")
 
         config_version = self.get_config_version()
-        if config_version == Constant.OLD_CONFIG_VERSION:
-            self.validate_old_version_static_ip_nw_config()
-        elif config_version == Constant.NEW_CONFIG_VERSION:
-            self.validate_new_version_static_ip_nw_config()
+        if config_version == Constant.CONFIG_VERSION_V1:
+            self.validate_static_ip_nw_config_v1()
+        elif config_version == Constant.CONFIG_VERSION_V2:
+            self.validate_static_ip_nw_config_v2()
         
     def validate_dhcp_nw_config(self):
         if "DHCPNetworkDetails" not in self.__config:
@@ -101,7 +101,8 @@ class ConfigValidator:
         if "isStatic" in self.__config and not self.__config["isStatic"]:
             raise InvalidInputError("isStatic should be true. Only Static IP configuration is supported currently")
 
-    def check_if_old_nw_config(self):
+    #checks if all the fields in config are present
+    def check_if_nw_config_v1(self):
         if not self.__config["applianceControlPlaneIpAddress"].strip():
             return False
         if not self.__config["staticIpNetworkDetails"]["networkForApplianceVM"].strip():
@@ -116,7 +117,8 @@ class ConfigValidator:
             return False
         return True
 
-    def check_if_new_nw_config(self):
+    #checks if only networkForApplianceVM and networkCIDRForApplianceVM are present in config
+    def check_if_nw_config_v2(self):
         if self.__config["applianceControlPlaneIpAddress"].strip():
             return False
         if not self.__config["staticIpNetworkDetails"]["networkForApplianceVM"].strip():
@@ -132,29 +134,32 @@ class ConfigValidator:
         return True
 
     def get_config_version(self):
-        if(self.check_if_old_nw_config()):
-            return Constant.OLD_CONFIG_VERSION
-        if(self.check_if_new_nw_config()):
-            return Constant.NEW_CONFIG_VERSION
-        raise InvalidInputError("Invalid Config provided")
-
-    def validate_segment_details_config(self, customer_resource):
-        customer_res: CustomerResource = customer_resource
-        res = self._segment_helper.get_segment_list(customer_res.subscription_id, 
-                                                    customer_res.resource_group, customer_res.private_cloud)
+        if(self.check_if_nw_config_v1()):
+            return Constant.CONFIG_VERSION_V1
+        if(self.check_if_nw_config_v2()):
+            return Constant.CONFIG_VERSION_V2
+        raise InvalidInputError("The Config file does not qualify for either of versions. Please provide the fields according to documentation.")
+    
+    '''
+    Checks if the segment details given by the user in config matches with the segments present in the sddc.
+    '''
+    def validate_segment_details_config(self):
+        res = self._segment_helper.get_segment_list(self.__config['subscriptionId'], 
+                                                    self.__config['resourceGroup'], self.__config['privateCloud'])
         
         segment_in_config = self.__config["staticIpNetworkDetails"]["networkForApplianceVM"]
         segment_cidr_in_config = self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"]
         for segment in res["value"]:
             if segment["name"].casefold() == segment_in_config.casefold():
                 if segment["properties"]["subnet"]["gatewayAddress"] != segment_cidr_in_config:
-                    raise InvalidInputError("Segment {} already exists with a different ip cidr".format(segment_in_config))
+                    raise InvalidInputError("Segment {} already exists with a different gateway ip cidr".format(segment_in_config))
 
         for segment in res["value"]:
             if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
                 if segment["name"].casefold() != segment_in_config.casefold():
-                    raise InvalidInputError("A different segment already present with ip cidr {}".format(segment_cidr_in_config))
+                    raise InvalidInputError("A different segment already present with gateway ip cidr {}".format(segment_cidr_in_config))
      
     def validate_avs_config(self):
         self.validate_nw_config()
         self.validate_azure_details()
+        self.validate_segment_details_config()

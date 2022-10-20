@@ -15,7 +15,7 @@ class NetworkOrchestrator(Orchestrator):
         gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segment_ip_cidr)
         self.validate_ip_address(gateway_ip)
         
-        if version == Constant.NEW_CONFIG_VERSION:
+        if version == Constant.CONFIG_VERSION_V2:
             if int(cidr) != 28:
                 raise InvalidInputError("Invalid segment block size provided, Please provide a /28 address")
             
@@ -37,10 +37,10 @@ class NetworkOrchestrator(Orchestrator):
         return gateway_ip, cidr
 
     '''
-    gateway ip = 2nd ip of cidr = 10.0.0.(xxxx 0001)
-    control plane IP address = 3rd ip of cidr = 10.0.0.(xxxx 0002)
-    nodepool range = 11th to 15th ip = 10.0.0.(xxxx 1010) - 10.0.0.(xxxx 1110)  
-    Buffer / Free IPs  = 4th to 10th Ip = 10.0.0.(xxxx 0011) - 10.0.0.(xxxx 1001)
+    gateway ip = 2nd ip of cidr = 10.0.0.1
+    control plane IP address = 3rd ip of cidr = 10.0.0.2
+    nodepool range = 11th to 15th ip = 10.0.0.10 - 10.0.0.14 
+    Buffer / Free IPs  = 4th to 10th Ip = 10.0.0.5 - 10.0.0.9
     1st and 16th ip are reserved for special purpose in nsx-t segment
     '''
     def populate_network_config(self, config):

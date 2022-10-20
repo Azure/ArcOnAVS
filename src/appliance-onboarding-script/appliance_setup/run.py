@@ -133,14 +133,12 @@ if __name__ == "__main__":
 
         version = avs_config_validator.get_config_version()
       
-        if(version == Constant.NEW_CONFIG_VERSION):
+        if(version == Constant.CONFIG_VERSION_V2):
             network_orchestrator: Orchestrator = NetworkOrchestrator()
             network_orchestrator.orchestrate(config)
 
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
-
-        avs_config_validator.validate_segment_details_config(_customer_details.customer_resource)
 
         # TODO: Remove the Condition check after internal testing.
         #  This condition allows the user specified location to be use for creating RB, CL resources.
