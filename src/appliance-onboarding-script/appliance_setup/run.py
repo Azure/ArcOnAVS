@@ -131,8 +131,7 @@ if __name__ == "__main__":
         avs_config_validator = ConfigValidator(config)
         avs_config_validator.validate_avs_config()
 
-        version = avs_config_validator.get_config_version()
-      
+        version = avs_config_validator.get_config_version()      
         if(version == Constant.CONFIG_VERSION_V2):
             network_orchestrator: Orchestrator = NetworkOrchestrator()
             network_orchestrator.orchestrate(config)

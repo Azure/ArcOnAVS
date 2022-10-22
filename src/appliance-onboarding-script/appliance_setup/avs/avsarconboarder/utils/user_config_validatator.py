@@ -138,11 +138,9 @@ class ConfigValidator:
             return Constant.CONFIG_VERSION_V1
         if(self.check_if_nw_config_v2()):
             return Constant.CONFIG_VERSION_V2
-        raise InvalidInputError("The Config file does not qualify for either of versions. Please provide the fields according to documentation.")
+        raise InvalidInputError("Either provide values of only networkForApplianceVM, networkCIDRForApplianceVM in config file for network config or provide all values.")
     
-    '''
-    Checks if the segment details given by the user in config matches with the segments present in the sddc.
-    '''
+    #Checks if the segment details given by the user in config matches with the segments present in the sddc.  
     def validate_segment_details_config(self):
         res = self._segment_helper.get_segment_list(self.__config['subscriptionId'], 
                                                     self.__config['resourceGroup'], self.__config['privateCloud'])
