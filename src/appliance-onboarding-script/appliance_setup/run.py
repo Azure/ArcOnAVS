@@ -152,18 +152,8 @@ if __name__ == "__main__":
 
     if operation == 'onboard':
         if config["isAVS"]:
-            dhcp_data_converter: Converter = DHCPConverter()
-            segment_data_converter: Converter = SegmentConverter()
-            if config["isStatic"]:
-                nsx_orchestrator: Orchestrator = NSXOrchestor(_customer_details,
-                                                              dhcp_data_converter.convert_data(config),
-                                                              segment_data_converter.convert_data(config))
-            else:
-                nsx_orchestrator: Orchestrator = NSXOrchestor(_customer_details,
-                                                              None,
-                                                              segment_data_converter.convert_data(config))
-            nsx_orchestrator.orchestrate()
-            # TODO Move the DNS Helper out of the processor
+            # TODO(P0): Validate Segment Exists, Segment GW IP matches required format, Segment is empty.
+            # TODO(P1): Move the DNS Helper out of the processor
             if config["isStatic"]:
                 dns_helper = DNSHelper()
                 dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
