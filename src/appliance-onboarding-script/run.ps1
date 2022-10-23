@@ -3,9 +3,10 @@ Param(
     [parameter(Mandatory=$true)][string]$Operation,
     [Parameter(Mandatory=$true)] [string] $FilePath,
     [Parameter(Mandatory=$false)] [string] $LogLevel = 'INFO',
-    [Parameter(Mandatory=$false)] [bool] $isAutomated = $false # isAutomated Parameter is set to true if it is an automation testing Run.
+    [Parameter(Mandatory=$false)] [bool] $isAutomated = $false, # isAutomated Parameter is set to true if it is an automation testing Run.
                                                                 # In case this param is true, we use az login --identity, which logs in Azure VM's identity
                                                                 # and skips the confirm prompts.
+    [Parameter(Mandatory=$true)] [string] $ManagedIdentityResourceId
 )
 
 $majorVersion = $PSVersionTable.PSVersion.Major
@@ -202,7 +203,7 @@ if ($az_account_check_token -eq $null){
     setPathForAzCliCert -config $config
     if ($isAutomated)
 	{
-        az login --identity
+        az login --identity --username $ManagedIdentityResourceId
 	}
     else
 	{
