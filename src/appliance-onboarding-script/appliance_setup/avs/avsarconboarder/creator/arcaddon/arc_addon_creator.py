@@ -32,4 +32,4 @@ class ArcAddonCreator(Creator):
             logging.info("Created arc addon")
         except Exception as e:
             raise ArcAddOnCreationException("Exception occured while creating arc addon!") from e
-        return res   
+        return res
