@@ -1,3 +1,4 @@
+from ctypes import sizeof
 from ...constants import Constant
 from ...orchestrator._orchestrator import Orchestrator
 import ipaddress
@@ -27,6 +28,8 @@ class NetworkOrchestrator(Orchestrator):
         
     def get_gateway_address_cidr_from_network_addr(self, segment_ip_cidr):
         values = segment_ip_cidr.split('/')
+        if len(values) != 2:
+            raise InvalidInputError("Invalid gateway ip cidr provided")              
         return values[0], values[1]
 
     '''
