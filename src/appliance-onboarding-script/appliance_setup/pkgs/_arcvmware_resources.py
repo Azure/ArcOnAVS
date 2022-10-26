@@ -2,7 +2,7 @@ import json
 import logging
 import re
 
-from pkgs._utils import safe_quote_string
+from pkgs._utils import safe_escape_characters
 from ._az_cli import az_cli
 from ._exceptions import AzCommandError
 from ._azure_resource_validations import _wait_until_appliance_is_in_running_state
@@ -94,7 +94,7 @@ class ArcVMwareResources(object):
             '--fqdn', f'"{fqdn}"',
             '--port', f'"{port}"',
             '--username', f'"{username}"',
-            '--password', safe_quote_string(password)
+            '--password="{}"'.format(safe_escape_characters(password))
         )
         if err:
             raise AzCommandError('Connect vCenter failed.')
