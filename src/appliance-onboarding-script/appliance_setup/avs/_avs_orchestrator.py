@@ -40,18 +40,3 @@ class AVSOrchestrator(Orchestrator):
             res = self._az_cli_executor.run_az_cli(az_cli)
         except JSONDecodeError as jde:
             logging.info("response for _set_default_subscription :: success")
-
-    def check_if_arc_onboarded_on_cloud(self, customer_resource):
-        customer_res: CustomerResource = customer_resource
-        arc_add_on_url = Constant.MGMT_URL + "addons/arc" + "?" + Constant.API_VERSION + "=" + Constant.PREVIEW_API_VERSION_VALUE
-        cloud_details_url = arc_add_on_url.format(customer_res.subscription_id,
-                                                  customer_res.resource_group,
-                                                  customer_res.private_cloud)
-
-        az_cli = AzCli().append(Constant.REST).append("-m").append(Constant.GET).append("-u"). \
-            append(cloud_details_url)
-
-        res = self._az_cli_executor.run_az_cli(az_cli)
-        if res is None:
-            return False
-        return True

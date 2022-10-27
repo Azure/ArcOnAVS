@@ -18,6 +18,7 @@ from avs.avsarconboarder.entity.request.arc_addon_request import ArcAddonRequest
 from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreator
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
 from pkgs._utils import confirm_prompt
+from avs.avsarconboarder.retriever.arcaddon.arc_add_on_retriever import ArcAddOnRetriever
 
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
@@ -143,8 +144,9 @@ if __name__ == "__main__":
 
     if operation == 'onboard':
         if config["register"]:
-            onboard_state =  avs_orchestrator.check_if_arc_onboarded_on_cloud(_customer_details.customer_resource)
-            if onboard_state:
+            arc_add_on_retriever: ArcAddOnRetriever = ArcAddOnRetriever()
+            arc_add_on_details =  arc_add_on_retriever.retrieve_data(_customer_details.customer_resource)
+            if arc_add_on_details:
                 raise InvalidInputError("Cannot Onboard. SDDC is already Arc Onboarded")
             
         if config["isAVS"]:
