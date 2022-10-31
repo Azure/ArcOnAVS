@@ -20,10 +20,8 @@ class NetworkOrchestrator(Orchestrator):
             if int(cidr) != 28:
                 raise InvalidInputError("Invalid segment block size provided, Please provide a /28 address")
             
-            subnet_first_ip_addr = ipaddress.IPv4Address(gateway_ip) - 1
-            try:
-                ipaddress.ip_network('{}/{}'.format(subnet_first_ip_addr,cidr))
-            except:
+            list_of_ip_addr_in_segment =  list(ipaddress.ip_network(segment_ip_cidr,strict=False).hosts())
+            if gateway_ip != str(list_of_ip_addr_in_segment[0]):
                 raise InvalidInputError("Invalid gateway ip provided, please provide a segment with first gateway ip")          
         
     def get_gateway_address_cidr_from_network_addr(self, segment_ip_cidr):
@@ -39,9 +37,7 @@ class NetworkOrchestrator(Orchestrator):
     Buffer / Free IPs  = 4th to 10th Ip = 10.0.0.(xxxx 0011) - 10.0.0.(xxxx 1001)
     '''
     def populate_network_config(self, config):
-        gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
-        subnet_first_ip_addr = ipaddress.IPv4Address(gateway_ip) - 1
-        list_of_ip_addr_in_segment =  list(ipaddress.ip_network('{}/{}'.format(subnet_first_ip_addr,cidr)).hosts())
+        list_of_ip_addr_in_segment =  list(ipaddress.ip_network(config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"],strict=False).hosts())
         config["applianceControlPlaneIpAddress"]  = str(list_of_ip_addr_in_segment[1])
         config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"]  = str(list_of_ip_addr_in_segment[10])
         config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"] = str(list_of_ip_addr_in_segment[13])
