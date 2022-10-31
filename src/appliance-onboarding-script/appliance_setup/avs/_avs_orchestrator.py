@@ -11,7 +11,7 @@ from .avsarconboarder.executor.azcli._AzCliExecutor import AzCliExecutor
 from .avsarconboarder.orchestrator._orchestrator import Orchestrator
 from .converter._converter import Converter
 from .converter.config._config_converter import ConfigConverter
-from .avsarconboarder.constants import Constant
+
 
 class AVSOrchestrator(Orchestrator):
 
