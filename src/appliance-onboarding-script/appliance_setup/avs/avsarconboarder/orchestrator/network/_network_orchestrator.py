@@ -12,9 +12,15 @@ class NetworkOrchestrator(Orchestrator):
         except:
             raise InvalidInputError("Invalid ip addresses provided")
 
+    def validate_ip_network(self, gateway_ip_cidr):
+        try:
+            ipaddress.ip_network(gateway_ip_cidr, strict=False)
+        except:
+            raise InvalidInputError("Invalid gateway ip cidr provided")
+
     def validate_static_ip_cidr_block(self, segment_ip_cidr, version):
         gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segment_ip_cidr)
-        self.validate_ip_address(gateway_ip)
+        self.validate_ip_network(gateway_ip)
         
         if version == Constant.CONFIG_VERSION_V2:
             if int(cidr) != 28:
