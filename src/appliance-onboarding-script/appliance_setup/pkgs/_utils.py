@@ -107,14 +107,15 @@ def create_dir_if_doesnot_exist(path: str):
     except FileExistsError:
         pass
 
-def quote_string_for_cmd(ip: str):
-    return f'"{ip}"'
+def safe_escape_characters(ip:str):
+    safe_str = ''
+    for ch in ip:
+        if ch == '"':
+            safe_str = safe_str + '\\' + ch
+        else:
+            safe_str = safe_str + ch
+            
+    return safe_str
 
-def quote_string_for_bash(ip: str):
-    return f"'{ip}'"
 
-def safe_quote_string(ip:str):
-    if os.name=='nt':
-        return quote_string_for_cmd(ip)
-    else:
-        return quote_string_for_bash(ip)
+
