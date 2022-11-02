@@ -21,7 +21,7 @@ class ArcAddOnRetriever(Retriever):
 
     def retrieve_data(self, customer_resource):
         customer_res: CustomerResource = customer_resource
-        arc_add_on_url = self.arc_add_on_url.format(customer_res.subscription_id,
+        arc_add_on_url = self._arc_add_on_url.format(customer_res.subscription_id,
                                                   customer_res.resource_group,
                                                   customer_res.private_cloud)
 
