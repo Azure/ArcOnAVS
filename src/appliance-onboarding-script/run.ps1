@@ -24,10 +24,10 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Use empty string for the version to fetch latest CLI version
 $AzExtensions=@{
-    "arcappliance"="0.2.27";
-    "connectedvmware"="0.1.7";
-    "k8s-extension"="1.3.4";
-    "customlocation"="0.1.3"};
+    "arcappliance"="";
+    "connectedvmware"="";
+    "k8s-extension"="";
+    "customlocation"=""};
 
 function checkIfAzExtensionIsInstalled($name, $version)
 {
@@ -65,17 +65,14 @@ function deactivate_venv()
 
 function installAzExtension($name, $version)
 {
-    if(!(checkIfAzExtensionIsInstalled -name $name -version $version))
+    if($version -eq "")
+    {
+        az extension add --name $name --upgrade
+    }
+    elseif(!(checkIfAzExtensionIsInstalled -name $name -version $version))
     {
         Write-Host "Installing extension $name of version $version..."
-        if("$version" -eq "")
-        {
-            az extension add --name $name --upgrade
-        }
-        else
-        {
-            az extension add --name $name --version $version --upgrade
-        }
+        az extension add --name $name --version $version --upgrade
     }
 }
 
@@ -193,7 +190,7 @@ if(![string]::IsNullOrEmpty($config.proxyDetails) -and ![string]::IsNullOrEmpty(
 else
 {
     py -m pip install --upgrade pip
-    py -m pip install azure-cli==2.39.0
+    py -m pip install azure-cli
     py -m pip install -r .\appliance_setup\dependencies
 }
 
