@@ -2,9 +2,9 @@
 
 # Use empty string for the version to fetch latest CLI version
 declare -A AzExtensions=(
-    ["arcappliance"]="0.2.26"
+    ["arcappliance"]="0.2.27"
     ["connectedvmware"]="0.1.7"
-    ["k8s-extension"]="1.3.3"
+    ["k8s-extension"]="1.3.4"
     ["customlocation"]="0.1.3")
 
 fail () {
@@ -31,7 +31,7 @@ check_if_extension_is_installed() {
   then
     return 0
   fi
-  # Extesnion is installed and extension version is euqal to required version
+  # Extension is installed and extension version is equal to required version
   if [ "$extensionVersion" == "$version" ]
   then
     return 1
@@ -42,18 +42,18 @@ check_if_extension_is_installed() {
 install_extensions_if_not_already_installed() {
   name="$1"
   version="$2"
-  check_if_extension_is_installed $name $version
-  if [ $? == 0 ]
-  then
-    echo "Installing Az extension $name of version $version..."
-    if [ "$version" == "" ]
+  if [ "$version" == "" ]
     then
       az extension add --name "$name" --upgrade
-    else
-      az extension add --name "$name" --version "$version" --upgrade
-    fi
   else
-    echo "Extension $name of version $version is already present"
+    check_if_extension_is_installed $name $version
+      if [ $? == 0 ]
+        then
+          echo "Installing Az extension $name of version $version..."
+          az extension add --name "$name" --version "$version" --upgrade
+      else
+        echo "Extension $name of version $version is already present"
+      fi
   fi
 }
 
