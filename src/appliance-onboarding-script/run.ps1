@@ -24,10 +24,10 @@ $ProgressPreference = 'SilentlyContinue'
 
 # Use empty string for the version to fetch latest CLI version
 $AzExtensions=@{
-    "arcappliance"="0.2.26";
-    "connectedvmware"="0.1.7";
-    "k8s-extension"="1.3.3";
-    "customlocation"="0.1.3"};
+    "arcappliance"="";
+    "connectedvmware"="";
+    "k8s-extension"="";
+    "customlocation"=""};
 
 function checkIfAzExtensionIsInstalled($name, $version)
 {
@@ -65,17 +65,14 @@ function deactivate_venv()
 
 function installAzExtension($name, $version)
 {
-    if(!(checkIfAzExtensionIsInstalled -name $name -version $version))
+    if($version -eq "")
+    {
+        az extension add --name $name --upgrade
+    }
+    elseif(!(checkIfAzExtensionIsInstalled -name $name -version $version))
     {
         Write-Host "Installing extension $name of version $version..."
-        if("$version" -eq "")
-        {
-            az extension add --name $name --upgrade
-        }
-        else
-        {
-            az extension add --name $name --version $version --upgrade
-        }
+        az extension add --name $name --version $version --upgrade
     }
 }
 
