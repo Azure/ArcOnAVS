@@ -11,7 +11,7 @@ from ...retriever._retriever import Retriever
 
 class ArcAddOnRetriever(Retriever):
     instance = None
-    _arc_add_on_url = Constant.MGMT_URL + "addons/arc" + "?" + Constant.API_VERSION + "=" + Constant.PREVIEW_API_VERSION_VALUE
+    _arc_add_on_url = Constant.MGMT_URL + "addons" + "?" + Constant.API_VERSION + "=" + Constant.PREVIEW_API_VERSION_VALUE
     
     def __new__(cls):
         if cls.instance is None:
@@ -29,4 +29,8 @@ class ArcAddOnRetriever(Retriever):
             append(arc_add_on_url)
 
         res = self._az_cli_executor.run_az_cli(az_cli)
-        return res
+    
+        for addon in res["value"]:
+            if addon["properties"]["addonType"] == "Arc":
+                return addon 
+        return None
