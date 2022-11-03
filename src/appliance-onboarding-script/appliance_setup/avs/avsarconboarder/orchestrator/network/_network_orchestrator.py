@@ -19,10 +19,10 @@ class NetworkOrchestrator(Orchestrator):
             raise InvalidInputError("Invalid gateway ip cidr provided")
 
     def validate_static_ip_cidr_block(self, segment_ip_cidr, version):
-        gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segment_ip_cidr)
-        self.validate_ip_network(gateway_ip)
+        self.validate_ip_network(segment_ip_cidr)
         
         if version == Constant.CONFIG_VERSION_V2:
+            gateway_ip, cidr = self.get_gateway_address_cidr_from_network_addr(segment_ip_cidr)
             if int(cidr) != 28:
                 raise InvalidInputError("Invalid segment block size provided, Please provide a /28 address")
             
