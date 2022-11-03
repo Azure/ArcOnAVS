@@ -14,11 +14,12 @@ from avs.avsarconboarder.utils.utils import validate_region
 from avs.converter._converter import Converter
 from avs.converter.nsx.nsx_converter import DHCPConverter, SegmentConverter
 from pkgs import ApplianceSetup, VMwareEnvSetup, ArcVMwareResources
-from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion, ProgramExit
+from pkgs._exceptions import FilePathNotFoundInArgs, InvalidOperation, InternetNotEnabled, InvalidRegion, ProgramExit, InvalidInputError
 from avs.avsarconboarder.entity.request.arc_addon_request import ArcAddonRequest
 from avs.avsarconboarder.creator.arcaddon.arc_addon_creator import ArcAddonCreator
 from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDeleter
 from pkgs._utils import confirm_prompt
+from avs.avsarconboarder.retriever.arcaddon.arc_add_on_retriever import ArcAddOnRetriever
 
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
@@ -62,11 +63,9 @@ def logger_setup(logLevel = logging.INFO):
 
     log.setLevel(logLevel)
 
-
 def register_with_private_cloud(customer_resource, vcenterId: str):
     arc_addon_creator = ArcAddonCreator()
     arc_addon_creator.create(customer_resource, ArcAddonRequest("Arc", vcenterId))
-
 
 def deregister_from_private_cloud(customer_resource):
     arc_addon_deleter = ArcAddonDeleter()
@@ -151,6 +150,12 @@ if __name__ == "__main__":
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
 
     if operation == 'onboard':
+        if config["register"]:
+            arc_add_on_retriever: ArcAddOnRetriever = ArcAddOnRetriever()
+            arc_add_on_details =  arc_add_on_retriever.retrieve_data(_customer_details.customer_resource)
+            if arc_add_on_details:
+                raise InvalidInputError("Cannot Onboard. SDDC is already Arc Onboarded")
+            
         if config["isAVS"]:
             dhcp_data_converter: Converter = DHCPConverter()
             segment_data_converter: Converter = SegmentConverter()
