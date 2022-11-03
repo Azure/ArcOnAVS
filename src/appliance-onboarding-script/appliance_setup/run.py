@@ -4,6 +4,7 @@ import os
 import sys
 from datetime import datetime
 from avs._avs_orchestrator import AVSOrchestrator
+from avs.avsarconboarder.orchestrator.network._network_orchestrator import NetworkOrchestrator
 from avs.avsarconboarder.orchestrator.NSXOrchestrator._nsx_orchestrator import NSXOrchestor
 from avs.avsarconboarder.orchestrator._orchestrator import Orchestrator
 from avs.avsarconboarder.processor.nsx.helper._DNSHelper import DNSHelper
@@ -129,6 +130,12 @@ if __name__ == "__main__":
         logging.info("avs enabled")
         avs_config_validator = ConfigValidator(config)
         avs_config_validator.validate_avs_config()
+
+        version = avs_config_validator.get_config_version()      
+        if(version == Constant.CONFIG_VERSION_V2):
+            network_orchestrator: Orchestrator = NetworkOrchestrator()
+            network_orchestrator.orchestrate(config)
+
         avs_orchestrator: Orchestrator = AVSOrchestrator()
         _customer_details = avs_orchestrator.orchestrate(config)
 
@@ -138,7 +145,6 @@ if __name__ == "__main__":
         #  The former is enabled only to speed up internal testing
         if Constant.LOCATION not in config:
             config[Constant.LOCATION] = _customer_details.cloud_details[Constant.LOCATION]
-
 
         # TODO: Point to documentation link here for getting valid regions.
         if not validate_region(config[Constant.LOCATION]):

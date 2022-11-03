@@ -30,4 +30,6 @@ PROVISIONING_STATE = "provision_state"
 CLUSTER_SIZE = "cluster_size"
 VNET_IP_CIDR = "VNET_IP_CIDR"
 DNS_SERVICE_IP = "DNS_Service_IP"
+CONFIG_VERSION_V1 = 0
+CONFIG_VERSION_V2 = 1
 VALID_LOCATIONS = "westeurope,eastus,australiaeast,canadacentral,uksouth,southeastasia"
