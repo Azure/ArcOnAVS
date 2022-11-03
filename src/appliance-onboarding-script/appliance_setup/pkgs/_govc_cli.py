@@ -21,6 +21,7 @@ def govc_cli(*args):
                 return res, 1
             res = bytes_to_string(res)
         except Exception as e:
+            logging.exception(res)
             logging.exception(e)
             return res, 1
         return res, 0

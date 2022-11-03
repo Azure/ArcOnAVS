@@ -39,7 +39,7 @@ class ConfigValidator:
         #  configuration and remove the explicit call to block DHCP configuration
         # if "isStatic" not in self.__config:
         #     raise InvalidInputError("isStatic is a required configuration")
-        self.block_DHCP_config()
+        # self.block_DHCP_config()
 
         if self.__config["isStatic"]:
             self.validate_static_ip_nw_config()
