@@ -11,17 +11,19 @@ class ConfigValidator:
         self.__config = config
         self._network_orchestrator = NetworkOrchestrator()
         self._segment_helper = _NSXSegmentHelper.NSXSegmentHelper()
-        
     def validate_static_ip_nw_config_v1(self):
         self._network_orchestrator.validate_ip_address(self.__config["applianceControlPlaneIpAddress"])
         self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.CONFIG_VERSION_V1)
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolStart"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["k8sNodeIPPoolEnd"])
         self._network_orchestrator.validate_ip_address(self.__config["staticIpNetworkDetails"]["gatewayIPAddress"])
-        
+
         gateway_ip_cidr = self._network_orchestrator.get_gateway_address_cidr_from_network_addr(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"])
         if gateway_ip_cidr[0] != self.__config["staticIpNetworkDetails"]["gatewayIPAddress"]:
             raise InvalidInputError("Gateway IP in config and gateway of segment do not match")
+
+    def validate_static_ip_nw_config_v2(self):
+        self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.CONFIG_VERSION_V2)
 
     def validate_static_ip_nw_config_v2(self):
         self._network_orchestrator.validate_static_ip_cidr_block(self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"], Constant.CONFIG_VERSION_V2)
@@ -137,10 +139,17 @@ class ConfigValidator:
     def validate_segment_details_config(self):
         if not self.__config["staticIpNetworkDetails"]["networkForApplianceVM"].strip():
             raise InvalidInputError("Provide the value of networkForApplianceVM")
-        res = self._segment_helper.get_segment_list(self.__config['subscriptionId'], 
+        res = self._segment_helper.get_segment_list(self.__config['subscriptionId'],
                                                     self.__config['resourceGroup'], self.__config['privateCloud'])
-        
+
         segment_in_config = self.__config["staticIpNetworkDetails"]["networkForApplianceVM"]
+        segment_exists = False
+        for segment in res["value"]:
+            if segment["name"].casefold() == segment_in_config.casefold():
+                segment_exists = True
+        if not segment_exists:
+            raise InvalidInputError("Segment {} does not exist".format(segment_in_config))
+
         segment_cidr_in_config = self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"]
         for segment in res["value"]:
             if segment["name"].casefold() == segment_in_config.casefold():
@@ -151,7 +160,7 @@ class ConfigValidator:
             if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
                 if segment["name"].casefold() != segment_in_config.casefold():
                     raise InvalidInputError("A different segment already present with gateway ip cidr " + segment_cidr_in_config)
-     
+    
     def validate_avs_config(self):
         self.validate_nw_config()
         self.validate_azure_details()
