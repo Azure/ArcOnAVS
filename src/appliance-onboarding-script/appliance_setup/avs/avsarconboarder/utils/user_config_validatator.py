@@ -103,6 +103,7 @@ class ConfigValidator:
             return False 
         if "gatewayIPAddress" not in self.__config["staticIpNetworkDetails"]:
             return False
+
         return True
 
     #checks if only networkForApplianceVM and networkCIDRForApplianceVM are present in config
@@ -121,6 +122,7 @@ class ConfigValidator:
             return False 
         if "gatewayIPAddress" in self.__config["staticIpNetworkDetails"]:
             return False
+
         return True
 
     def get_config_version(self):
@@ -137,7 +139,8 @@ class ConfigValidator:
     def validate_segment_details_config(self):
         if not self.__config["staticIpNetworkDetails"]["networkForApplianceVM"].strip():
             raise InvalidInputError("Provide the value of networkForApplianceVM")
-        res = self._segment_helper.get_segment_list(self.__config['subscriptionId'], 
+
+        res = self._segment_helper.get_segment_list(self.__config['subscriptionId'],
                                                     self.__config['resourceGroup'], self.__config['privateCloud'])
         
         segment_in_config = self.__config["staticIpNetworkDetails"]["networkForApplianceVM"]
@@ -148,12 +151,10 @@ class ConfigValidator:
                 if segment["properties"]["subnet"]["gatewayAddress"] != segment_cidr_in_config:
                     raise InvalidInputError("Segment " + segment_in_config + " already exists with a different gateway ip cidr")
 
-
         for segment in res["value"]:
             if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
                 if segment["name"].casefold() != segment_in_config.casefold():
                     raise InvalidInputError("A different segment already present with gateway ip cidr " + segment_cidr_in_config)
-     
 
     def validate_avs_config(self):
         self.validate_nw_config()
