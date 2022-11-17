@@ -28,13 +28,13 @@ Use commands as follows:
 
 ```bash
 sudo chmod +x run.sh 
-sudo bash run.sh <onboard/offboard> <path_to_config_avs.json>
+sudo bash run.sh onboard <path_to_config_avs.json>
 ```
 You can additionally specify the log level as debug to get DEBUG level logs.
 
 ```bash
 sudo chmod +x run.sh
-sudo bash run.sh <onboard/offboard> <path_to_config_avs.json> DEBUG
+sudo bash run.sh onboard <path_to_config_avs.json> DEBUG
 ```
 
 ## Feedback
