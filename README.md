@@ -6,6 +6,37 @@ This helper script is provided to help you simplify the onboarding to the previe
 
 Please follow the [documentation](https://learn.microsoft.com/en-us/azure/azure-vmware/deploy-arc-for-azure-vmware-solution?tabs=windows) to use the script and deploy Arc for Azure VMware Solution
 
+## Using the script
+
+### On a Windows machine
+
+Open a PowerShell window and run the following command. You will need to bypass execution policy as the script is not signed.
+As with any script downloaded from the internet, do read its contents before running it.
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation onboard -FilePath <path_to_config_avs.json>
+```
+You can additionally specify the log level as debug to get DEBUG level logs.
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\run.ps1 -Operation onboard -FilePath <path_to_config_avs.json> -LogLevel DEBUG
+```
+
+### On a Linux machine
+
+Use commands as follows:
+
+```bash
+sudo chmod +x run.sh 
+sudo bash run.sh <onboard/offboard> <path_to_config_avs.json>
+```
+You can additionally specify the log level as debug to get DEBUG level logs.
+
+```bash
+sudo chmod +x run.sh
+sudo bash run.sh <onboard/offboard> <path_to_config_avs.json> DEBUG
+```
+
 ## Feedback
 
 In case of any questions/feedback fill this(https://aka.ms/ArcOnAVSFeedbackForm) form and we will reach out to you.
