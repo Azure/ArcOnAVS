@@ -71,7 +71,7 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ExtendedLocation'
         },
         {
-            'feature': ['AzureArcForAVS', 'earlyAccess'],
+            'feature': ['AzureArcForAVS'],
             'namespace': 'Microsoft.AVS'
         }
     ]
