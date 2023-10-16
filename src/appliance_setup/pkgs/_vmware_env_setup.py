@@ -15,23 +15,12 @@ class VMwareEnvSetup(object):
         self._config = config
 
     def setup(self):
-        self._set_vcenter_cred()
         try:
             if self._config['isAVS']:
                 self._create_folder()
                 self._create_resource_pool()
         except KeyError:
             pass
-
-    def _set_vcenter_cred(self):
-        config = self._config
-        address = config['vCenterFQDN'] + ':' + config['vCenterPort']
-        username = config['vCenterUserName']
-        password = config['vCenterPassword']
-        os.environ['GOVC_INSECURE'] = "true"
-        os.environ['GOVC_URL'] = f"https://{address}/sdk"
-        os.environ['GOVC_USERNAME'] = f"{username}"
-        os.environ['GOVC_PASSWORD'] = f"{password}"
 
     def _create_folder(self):
         logging.info("in _create_folder")
