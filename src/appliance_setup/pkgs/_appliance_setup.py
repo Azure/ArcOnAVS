@@ -69,6 +69,9 @@ class ApplianceSetup(object):
         },
         {
             'namespace': 'Microsoft.ExtendedLocation'
+        },
+        {
+            'namespace': 'Microsoft.AVS'
         }
     ]
 
