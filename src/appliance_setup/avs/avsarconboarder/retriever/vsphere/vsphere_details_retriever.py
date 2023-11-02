@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import logging
 from ...entity._vsphere_resource import VSphereResourceData
 from ...retriever._retriever import Retriever
-from pkgs._govc_cli import govc_cli, govc_build_sub_command
+from pkgs._govc_cli import govc_cli
 from pkgs._exceptions import vCenterOperationFailed
 
 class VSphereDetails(Retriever):
