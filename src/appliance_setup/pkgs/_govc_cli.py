@@ -24,9 +24,3 @@ def govc_cli(*args):
             logging.exception(e)
             return res, 1
         return res, 0
-    
-def govc_build_sub_command(*args):
-    args = ' '.join(args)
-    cmd = os.path.join('.', 'govc')
-    cmd = cmd + ' ' + args
-    return '$({})'.format(cmd)
