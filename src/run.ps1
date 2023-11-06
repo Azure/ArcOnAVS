@@ -31,15 +31,6 @@ $AzExtensions=@{
 
 $logFile = Join-Path $PSScriptRoot "arcavs-output.log"
 
-function logH1($msg) {
-    $pattern = '0-' * 40
-    $spaces = ' ' * (40 - $msg.length / 2)
-    $nl = [Environment]::NewLine
-    $msgFull = "$nl $nl $pattern $nl $spaces $msg $nl $pattern $nl"
-    Write-Host -ForegroundColor Green $msgFull
-    Add-Content -Value "$msgFull" -Path $logFile
-}
-
 function logH2($msg) {
     $msgFull = "==> $msg"
     Write-Host -ForegroundColor Magenta $msgFull
@@ -312,12 +303,6 @@ else
     py -m pip install --upgrade pip
     py -m pip install -r .\appliance_setup\dependencies
 }
-
-logH2 "az --version"
-az --version
-az --version >> $logFile
-
-logH2 "Logging into azure"
 
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
