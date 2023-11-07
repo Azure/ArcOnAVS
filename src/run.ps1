@@ -255,30 +255,20 @@ if (shouldInstallAzCli) {
     installAzCli64Bit
 }
 
-try {
-    $bitSize = py -c "import struct; print(struct.calcsize('P') * 8)"
-    if ($bitSize -ne "64") {
-        throw "Python is not 64-bit"
-    }
-    Write-Host "64-bit python is already installed"
-}
-catch
+function fetchPythonLocation()
 {
-    Write-Host "Installing python..."
-    Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.8/python-3.8.8-amd64.exe" -OutFile ".temp/python-3.8.8-amd64.exe"
-    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'
-    $exitCode = $p.ExitCode
-    if($exitCode -ne 0)
-    {
-        throw "Python installation failed with exit code $LASTEXITCODE"
-    }
+    $azVersion = az --version *>&1;
+    $azVersionLines = $azVersion -split "`n"
+    
+    $pyLoc = $azVersionLines | Where-Object { $_ -match "^Python location" }
+    $pythonExe = $pyLoc -replace "^Python location '(.+?)'$", '$1'
+    return $pythonExe
 }
 
 Write-Host "Enabling long path support for python..."
 Start-Process powershell.exe -verb runas -ArgumentList "Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem -Name LongPathsEnabled -Value 1" -Wait
 
 $config = Get-Content -Path $FilePath | ConvertFrom-Json
-
 
 if((Test-Path -Path '.temp\govc.exe') -eq $false)
 {
@@ -288,21 +278,15 @@ if((Test-Path -Path '.temp\govc.exe') -eq $false)
     Rename-Item -Force -Path ".temp/govc_windows_amd64.exe" -NewName "govc.exe"
 }
 
+$pythonExe = fetchPythonLocation
+
+Write-Host "Installing python virtualenv package"
+. $pythonExe -m pip install virtualenv
+
 Write-Host "Creating python venv..."
-py -m venv .temp\.env
+. $pythonExe -m virtualenv .temp\.env
 
 activate_venv
-
-if(![string]::IsNullOrEmpty($config.proxyDetails) -and ![string]::IsNullOrEmpty($config.proxyDetails.certificateFilePath))
-{
-    py -m pip install --cert $config.proxyDetails.certificateFilePath --upgrade pip
-    py -m pip install --cert $config.proxyDetails.certificateFilePath -r .\appliance_setup\dependencies
-}
-else
-{
-    py -m pip install --upgrade pip
-    py -m pip install -r .\appliance_setup\dependencies
-}
 
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
@@ -317,13 +301,12 @@ if ($az_account_check_token -eq $null){
 	}
 }
 
-
 foreach($x in $AzExtensions.GetEnumerator())
 {   
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated
+. $pythonExe .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
