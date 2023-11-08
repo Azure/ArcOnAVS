@@ -40,9 +40,12 @@ class ConfigConverter(Converter):
     def _update_vcenter_inventory(self, config, customer_details):
         if customer_details.vsphere_resource_details is None:
             raise InvalidInputError('vsphere resource details absent from customer details')
+        
+        if ('datacenterForApplianceVM' not in config) or ('datacenterForApplianceVM' in config and config['datacenterForApplianceVM'] == ''):
+            config['datacenterForApplianceVM'] = customer_details.vsphere_resource_details.datacenter
 
-        config['datacenterForApplianceVM'] = customer_details.vsphere_resource_details.datacenter
-        config['datastoreForApplianceVM'] = customer_details.vsphere_resource_details.dataStore
+        if ('datastoreForApplianceVM' not in config) or ('datastoreForApplianceVM' in config and config['datastoreForApplianceVM'] == ''):    
+            config['datastoreForApplianceVM'] = customer_details.vsphere_resource_details.dataStore
 
         if ('resourcePoolForApplianceVM' not in config) or ('resourcePoolForApplianceVM' in config and config['resourcePoolForApplianceVM'] == ''):
             config['resourcePoolForApplianceVM'] = customer_details.vsphere_resource_details.resourcePool
