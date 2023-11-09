@@ -69,18 +69,6 @@ function setPathForAzCliCert($config)
     }
 }
 
-function activate_venv()
-{
-    Write-Host "Activating python venv..."
-    .\.temp\.env\Scripts\activate.ps1
-}
-
-function deactivate_venv()
-{
-    Write-Host "De-ctivating python venv..."
-    deactivate
-}
-
 function getLatestAzVersion() {
     $gitUrl = "https://raw.githubusercontent.com/Azure/azure-cli/main/src/azure-cli/setup.py"
     try {
@@ -280,14 +268,6 @@ if((Test-Path -Path '.temp\govc.exe') -eq $false)
 
 $pythonExe = fetchPythonLocation
 
-Write-Host "Installing python virtualenv package"
-. $pythonExe -m pip install virtualenv
-
-Write-Host "Creating python venv..."
-. $pythonExe -m virtualenv .temp\.env
-
-activate_venv
-
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
     setPathForAzCliCert -config $config
@@ -310,8 +290,6 @@ foreach($x in $AzExtensions.GetEnumerator())
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
-
-deactivate_venv
 
 $ProgressPreference = 'Continue'
 
