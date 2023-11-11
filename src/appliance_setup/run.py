@@ -150,9 +150,14 @@ if __name__ == "__main__":
             raise InvalidRegion(f"This feature is only available in these regions: {Constant.VALID_LOCATIONS}")
         
         if config["isStatic"]:
-            dns_helper = DNSHelper()
-            dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
-            config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
+            if "DNS_Service_IP" in config and config["DNS_Service_IP"] != '':
+                network_orchestrator.validate_ip_address(config["DNS_Service_IP"])
+                config[Constant.DNS_SERVICE_IP] = [config["DNS_Service_IP"]]
+                logging.info("providing custom DNS for arc-appliance")
+            else:
+                dns_helper = DNSHelper()
+                dns_data = dns_helper.retrieve_dns_config(_customer_details.customer_resource, _customer_details.cloud_details)
+                config[Constant.DNS_SERVICE_IP] = [dns_data.server_details['properties']['dnsServiceIp']]
 
     if operation == 'onboard':
         if config["register"]:
