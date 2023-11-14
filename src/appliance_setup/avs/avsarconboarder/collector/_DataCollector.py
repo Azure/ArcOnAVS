@@ -25,7 +25,7 @@ class DataCollector(Collector):
     def collect_data(self, *args):
         customer_res: CustomerResource = args[0]
         cloud_details, customer_credentials = self._collect_customer_cloud_data(customer_res)
-        vsphere_resource = self._vsphere_resource_retriever.retrieve_data(None)
+        vsphere_resource = self._vsphere_resource_retriever.retrieve_data(cloud_details, customer_credentials)
         return self.customer_details_bundler.bundle_data(customer_res, customer_credentials, cloud_details,
                                                          vsphere_resource)
 
