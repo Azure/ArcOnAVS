@@ -29,6 +29,24 @@ $AzExtensions=@{
     "k8s-extension"="";
     "customlocation"=""};
 
+$logFile = Join-Path $PSScriptRoot "arcavs-output.log"
+
+function logH2($msg) {
+    $msgFull = "==> $msg"
+    Write-Host -ForegroundColor Magenta $msgFull
+    Add-Content -Value "$msgFull" -Path $logFile
+}
+
+function logText($msg) {
+    Write-Host "$msg"
+    Add-Content -Value "$msg" -Path $logFile
+}
+
+function logWarn($msg) {
+    Write-Host -ForegroundColor Yellow $msg
+    Add-Content -Value "$msg" -Path $logFile
+}
+
 function checkIfAzExtensionIsInstalled($name, $version)
 {
     $list = (az extension list | ConvertFrom-Json)
@@ -51,16 +69,100 @@ function setPathForAzCliCert($config)
     }
 }
 
-function activate_venv()
-{
-    Write-Host "Activating python venv..."
-    .\.temp\.env\Scripts\activate.ps1
+function getLatestAzVersion() {
+    $gitUrl = "https://raw.githubusercontent.com/Azure/azure-cli/main/src/azure-cli/setup.py"
+    try {
+        $response = Invoke-WebRequest -Uri $gitUrl -TimeoutSec 30
+    }
+    catch {
+        logWarn "Failed to get the latest version from '$gitUrl': $($_.Exception.Message)"
+        return $null
+    }
+    if ($response.StatusCode -ne 200) {
+        logWarn "Failed to fetch the latest version from '$gitUrl' with status code '$($response.StatusCode)' and reason '$($response.StatusDescription)'"
+        return $null
+    }
+    $content = $response.Content
+    foreach ($line in $content -split "`n") {
+        if ($line.StartsWith('VERSION')) {
+            $match = [System.Text.RegularExpressions.Regex]::Match($line, 'VERSION = "(.*)"')
+            if ($match.Success) {
+                return $match.Groups[1].Value
+            }
+        }
+    }
+    logWarn "Failed to extract the latest version from the content of '$gitUrl'"
+    return $null
 }
 
-function deactivate_venv()
-{
-    Write-Host "De-ctivating python venv..."
-    deactivate
+function shouldInstallAzCli() {
+    # This function returns a boolean value, but any undirected / uncaptured stdout
+    # inside the function might be interpreted as true value by the caller.
+    # We can redirect using *>> to avoid this.
+    logH2 "Validating and installing 64-bit azure-cli"
+    $azCmd = (Get-Command az -ErrorAction SilentlyContinue)
+    if ($null -eq $azCmd) {
+        logText "Azure CLI is not installed. Installing..."
+        return $true
+    }
+
+    $currentAzVersion = az version --query '\"azure-cli\"' -o tsv 2>> $logFile
+    logText "Azure CLI version $currentAzVersion found in PATH at location: '$($azCmd.Source)'"
+    $azVersion = az --version *>&1;
+    $azVersionLines = $azVersion -split "`n"
+    
+    $pyLoc = $azVersionLines | Where-Object { $_ -match "^Python location" }
+    if ($null -eq $pyLoc) {
+        logWarn "Warning: Python location could not be found from the output of az --version:`n$($azVersionLines -join "`n"))"
+        return $true
+    }
+    logText $pyLoc
+    $pythonExe = $pyLoc -replace "^Python location '(.+?)'$", '$1'
+    try {
+        logText "Determining the bitness of Python at '$pythonExe'"
+        $arch = & $pythonExe -c "import struct; print(struct.calcsize('P') * 8)";
+        if ($arch -lt 64) {
+            logText "Azure CLI is $arch-bit. Installing 64-bit version..."
+            return $true
+        }
+    }
+    catch {
+        logText "Warning: Python version could not be determined from the output of az --version:`n$($azVersionLines -join "`n"))"
+        return $true
+    }
+
+    logH2 "$arch-bit Azure CLI is already installed. Checking for updates..."
+    $latestAzVersion = getLatestAzVersion
+    if ($latestAzVersion -and ($latestAzVersion -ne $currentAzVersion)) {
+        logText "A newer version of Azure CLI ($latestAzVersion) is available, installing it..."
+        return $true
+    }
+    logText "Azure CLI is up to date."
+    return $false
+}
+
+function installAzCli64Bit() {
+    $azCliMsi = "https://aka.ms/installazurecliwindowsx64"
+    $azCliMsiPath = Join-Path $PSScriptRoot "AzureCLI.msi"
+    $msiInstallLogPath = Join-Path $env:Temp "azInstall.log"
+    logText "Downloading Azure CLI 64-bit MSI from $azCliMsi to $azCliMsiPath"
+    try{
+        Invoke-WebRequest -Uri $azCliMsi -OutFile $azCliMsiPath
+    }
+    catch{
+        logWarn $_
+        throw "Download of AzCLI failed"
+    }
+    logText "Azure CLI MSI installation log will be written to $msiInstallLogPath"
+    logH2 "Installing Azure CLI. This might take a while..."
+    $p = Start-Process msiexec.exe -Wait -Passthru -ArgumentList "/i `"$azCliMsiPath`" /quiet /qn /norestart /log `"$msiInstallLogPath`""
+    $exitCode = $p.ExitCode
+    if ($exitCode -ne 0) {
+        throw "Azure CLI installation failed with exit code $exitCode. See $msiInstallLogPath for additional details."
+    }
+    $azCmdDir = Join-Path $env:ProgramFiles "Microsoft SDKs\Azure\CLI2\wbin"
+    [System.Environment]::SetEnvironmentVariable('PATH', $azCmdDir + ';' + $Env:PATH)
+    logText "Azure CLI has been installed."
 }
 
 function installAzExtension($name, $version)
@@ -143,30 +245,24 @@ if(![string]::IsNullOrEmpty($config.proxyDetails))
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-try {
-    $bitSize = py -c "import struct; print(struct.calcsize('P') * 8)"
-    if ($bitSize -ne "64") {
-        throw "Python is not 64-bit"
-    }
-    Write-Host "64-bit python is already installed"
+if (shouldInstallAzCli) {
+    installAzCli64Bit
 }
-catch
+
+function fetchPythonLocation()
 {
-    Write-Host "Installing python..."
-    Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.8.8/python-3.8.8-amd64.exe" -OutFile ".temp/python-3.8.8-amd64.exe"
-    $p = Start-Process .\.temp\python-3.8.8-amd64.exe -Wait -PassThru -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1 Include_test=0'
-    $exitCode = $p.ExitCode
-    if($exitCode -ne 0)
-    {
-        throw "Python installation failed with exit code $LASTEXITCODE"
-    }
+    $azVersion = az --version *>&1;
+    $azVersionLines = $azVersion -split "`n"
+    
+    $pyLoc = $azVersionLines | Where-Object { $_ -match "^Python location" }
+    $pythonExe = $pyLoc -replace "^Python location '(.+?)'$", '$1'
+    return $pythonExe
 }
 
 Write-Host "Enabling long path support for python..."
 Start-Process powershell.exe -verb runas -ArgumentList "Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem -Name LongPathsEnabled -Value 1" -Wait
 
 $config = Get-Content -Path $FilePath | ConvertFrom-Json
-
 
 if((Test-Path -Path '.temp\govc.exe') -eq $false)
 {
@@ -176,23 +272,7 @@ if((Test-Path -Path '.temp\govc.exe') -eq $false)
     Rename-Item -Force -Path ".temp/govc_windows_amd64.exe" -NewName "govc.exe"
 }
 
-Write-Host "Creating python venv..."
-py -m venv .temp\.env
-
-activate_venv
-
-if(![string]::IsNullOrEmpty($config.proxyDetails) -and ![string]::IsNullOrEmpty($config.proxyDetails.certificateFilePath))
-{
-    py -m pip install --cert $config.proxyDetails.certificateFilePath --upgrade pip
-    py -m pip install --cert $config.proxyDetails.certificateFilePath azure-cli
-    py -m pip install --cert $config.proxyDetails.certificateFilePath -r .\appliance_setup\dependencies
-}
-else
-{
-    py -m pip install --upgrade pip
-    py -m pip install azure-cli
-    py -m pip install -r .\appliance_setup\dependencies
-}
+$pythonExe = fetchPythonLocation
 
 $az_account_check_token = az account get-access-token
 if ($az_account_check_token -eq $null){
@@ -207,18 +287,15 @@ if ($az_account_check_token -eq $null){
 	}
 }
 
-
 foreach($x in $AzExtensions.GetEnumerator())
 {   
     installAzExtension -name $x.Name -version $x.Value
 }
 
-py .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated
+. $pythonExe .\appliance_setup\run.py $Operation $FilePath $LogLevel $isAutomated
 $OperationExitCode = $LASTEXITCODE
 
 printOperationStatusMessage -Operation $Operation -OperationExitCode $OperationExitCode
-
-deactivate_venv
 
 $ProgressPreference = 'Continue'
 
