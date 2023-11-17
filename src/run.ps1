@@ -146,7 +146,13 @@ function installAzCli64Bit() {
     $azCliMsiPath = Join-Path $PSScriptRoot "AzureCLI.msi"
     $msiInstallLogPath = Join-Path $env:Temp "azInstall.log"
     logText "Downloading Azure CLI 64-bit MSI from $azCliMsi to $azCliMsiPath"
-    Invoke-WebRequest -Uri $azCliMsi -OutFile $azCliMsiPath
+    try{
+        Invoke-WebRequest -Uri $azCliMsi -OutFile $azCliMsiPath
+    }
+    catch{
+        logWarn $_
+        throw "Download of AzCLI failed"
+    }
     logText "Azure CLI MSI installation log will be written to $msiInstallLogPath"
     logH2 "Installing Azure CLI. This might take a while..."
     $p = Start-Process msiexec.exe -Wait -Passthru -ArgumentList "/i `"$azCliMsiPath`" /quiet /qn /norestart /log `"$msiInstallLogPath`""
