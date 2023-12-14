@@ -71,7 +71,6 @@ class ApplianceSetup(object):
             'namespace': 'Microsoft.ExtendedLocation'
         },
         {
-            'feature': ['AzureArcForAVS'],
             'namespace': 'Microsoft.AVS'
         }
     ]
@@ -112,7 +111,6 @@ class ApplianceSetup(object):
         self._update_local_yaml_with_user_config()
         self._set_default_subscription()
         self._check_if_provider_is_registered()
-        self._check_if_required_features_registered()
         self._validate_appliance()
         self._prepare_appliance()
         appliance_id = self._deploy_and_create_appliance()
@@ -132,26 +130,6 @@ class ApplianceSetup(object):
             registrationState = res["registrationState"]
             if registrationState != "Registered":
                 raise ArmProviderNotRegistered(f'The provider namespace {namespace} should be registered')
-
-    def _check_if_required_features_registered(self):
-        for item in self._list_of_required_features:
-            if 'feature' not in item:
-                continue
-            required_features_list = item['feature']
-            namespace: str = item['namespace']
-            if type(required_features_list) != list:
-                required_features_list = [required_features_list]
-            required_features_list = [f'{namespace.lower()}/{x.lower()}' for x in required_features_list]
-            res, err = az_cli('feature', 'list', '--namespace', f'"{namespace}"')
-            if err:
-                raise AzCommandError(f'Not able to get the features under namespace {namespace}')
-            res = json.loads(res)
-            registered_featues = list(filter(lambda x: x['properties']['state'] == 'Registered', res))
-            registered_featues = list(map(lambda x: x['name'].lower(), registered_featues))
-            if len(set(required_features_list).intersection(registered_featues)) < len(required_features_list):
-                required_features_list = item['feature']
-                raise ArmFeatureNotRegistered(
-                    f'All the features should be registered from list {required_features_list} under namespace {namespace}')
 
     def delete(self):
         self._create_template_files()
