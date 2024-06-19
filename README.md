@@ -1,6 +1,6 @@
-# Helper script for enabling ARC on Azure VMWare Solution
+# Helper script for enabling ARC on Azure VMware Solution
 
-This helper script is provided to help you simplify the onboarding to the preview of ARC on Azure VMWare Solution.
+This helper script is provided to help you simplify the onboarding to ARC on Azure VMware Solution.
 
 ## Arc on AVS public doc
 
