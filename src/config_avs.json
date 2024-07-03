@@ -6,5 +6,11 @@
   "staticIpNetworkDetails": {
     "networkForApplianceVM": "",
     "networkCIDRForApplianceVM": ""
+  },
+  "proxyDetails": {
+    "http": "",
+    "https": "",
+    "noProxy": "",
+    "certificateFilePath": ""
   }
 }
