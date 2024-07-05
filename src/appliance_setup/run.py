@@ -21,6 +21,14 @@ from avs.avsarconboarder.deleter.arcadon.arc_addon_deleter import ArcAddonDelete
 from pkgs._utils import confirm_prompt
 from avs.avsarconboarder.retriever.arcaddon.arc_add_on_retriever import ArcAddOnRetriever
 
+class JSONWithCommentsDecoder(json.JSONDecoder):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
+    def decode(self, s):
+        s = '\n'.join(l if not l.lstrip().startswith('//') else '' for l in s.split('\n'))
+        return super().decode(s)
+
 def logger_setup(logLevel = logging.INFO):
     log_formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
     LOG_DIR = "logs"
@@ -96,7 +104,7 @@ if __name__ == "__main__":
     config = None
     with open(file_path, 'r') as f:
         data = f.read()
-        config = json.loads(data)
+        config = json.loads(data, cls=JSONWithCommentsDecoder)
 
     try:
         log_level = sys.argv[3]
