@@ -76,8 +76,8 @@ print_operation_status_message() {
 mkdir .temp
 if [ ! -z "$2" ] && [ -f "$2" ]
 then
-  http_p=$(grep -Po '(?<="http": ")[^"]*' "$2")
-  https_p=$(grep -Po '(?<="https": ")[^"]*' "$2")
+  http_p=$(cat "$2" | jq -r '.workstationProxyDetails.http')
+  https_p=$(cat "$2" | jq -r '.workstationProxyDetails.https')
   export http_proxy=$http_p
   export HTTP_PROXY=$http_p
   export https_proxy=$https_p
@@ -89,7 +89,7 @@ sudo -E apt-get -y install jq || fail
 
 if [ ! -z $https_p ]
 then
-  noproxy=$(cat "$2" | jq -r '.proxyDetails.noProxy')
+  noproxy=$(cat "$2" | jq -r '.workstationProxyDetails.noProxy')
   export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 fi
 
