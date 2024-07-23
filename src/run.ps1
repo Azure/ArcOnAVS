@@ -62,9 +62,9 @@ function checkIfAzExtensionIsInstalled($name, $version)
 
 function setPathForAzCliCert($config)
 {
-    if(![string]::IsNullOrEmpty($config.workstationProxyDetails) -and ![string]::IsNullOrEmpty($config.workstationProxyDetails.certificateFilePath))
+    if(![string]::IsNullOrEmpty($config.managementProxyDetails) -and ![string]::IsNullOrEmpty($config.managementProxyDetails.certificateFilePath))
     {
-        $certAbsolutePath=Resolve-Path -Path $config.workstationProxyDetails.certificateFilePath
+        $certAbsolutePath=Resolve-Path -Path $config.managementProxyDetails.certificateFilePath
         $env:REQUESTS_CA_BUNDLE=$certAbsolutePath
     }
 }
@@ -191,9 +191,9 @@ function printOperationStatusMessage($Operation, $OperationExitCode)
 }
 
 $config = Get-Content -Path $FilePath | ConvertFrom-Json
-if(![string]::IsNullOrEmpty($config.workstationProxyDetails))
+if(![string]::IsNullOrEmpty($config.managementProxyDetails))
 {
-    $config = $config.workstationProxyDetails
+    $config = $config.managementProxyDetails
     if(![string]::IsNullOrEmpty($config.http))
     {
         $env:http_proxy=$config.http

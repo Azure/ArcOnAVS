@@ -57,13 +57,13 @@ install_extensions_if_not_already_installed() {
   fi
 }
 
+RED="\e[0;91m"
+GREEN="\e[0;92m"
+RESET="\e[0m"
+
 print_operation_status_message() {
   operation_name="$1"
   operation_exit_code="$2"
-
-  RED="\e[0;91m"
-  GREEN="\e[0;92m"
-  RESET="\e[0m"
 
   if [ $operation_exit_code -eq 0 ]
   then
@@ -76,8 +76,8 @@ print_operation_status_message() {
 mkdir .temp
 if [ ! -z "$2" ] && [ -f "$2" ]
 then
-  http_p=$(cat "$2" | jq -r '.workstationProxyDetails.http')
-  https_p=$(cat "$2" | jq -r '.workstationProxyDetails.https')
+  http_p=$(cat "$2" | jq -r '.managementProxyDetails.http')
+  https_p=$(cat "$2" | jq -r '.managementProxyDetails.https')
   export http_proxy=$http_p
   export HTTP_PROXY=$http_p
   export https_proxy=$https_p
@@ -89,8 +89,20 @@ sudo -E apt-get -y install jq || fail
 
 if [ ! -z $https_p ]
 then
-  noproxy=$(cat "$2" | jq -r '.workstationProxyDetails.noProxy')
-  export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+  noproxy=$(cat "$2" | jq -r '.managementProxyDetails.noProxy')
+  proxyCAInput="$(cat "$2" | jq -r '.managementProxyDetails.certificateFilePath')"
+  if [[ -n "$proxyCAInput" ]]; then
+    proxyCA=$(realpath "$proxyCAInput")
+    if [[ -z "$proxyCA" ]]; then
+      echo -e "${RED}Invalid path '$proxyCAInput'. Please note that special variables like '~' and '\$HOME' are not expanded. Please provide a valid certificate file path.${RESET}"
+      fail
+    fi
+    if [[ ! -f "$proxyCA" ]]; then
+      echo -e "${RED}No file exists in the path '$proxyCA'. Please provide a valid certificate file path.${RESET}"
+      fail
+    fi
+    export REQUESTS_CA_BUNDLE="$proxyCA"
+  fi
 fi
 
 if [ ! -z $noproxy ] && [ ! $noproxy == 'null' ]

@@ -1,0 +1,22 @@
+{
+  "subscriptionId": "",
+  "resourceGroup": "",
+  "privateCloud": "",
+  "isStatic": true,
+  "staticIpNetworkDetails": {
+    "networkForApplianceVM": "",
+    "networkCIDRForApplianceVM": ""
+  },
+  "applianceProxyDetails": {
+    "http": "",
+    "https": "",
+    "noProxy": "",
+    "certificateFilePath": ""
+  },
+  "managementProxyDetails": {
+    "http": "",
+    "https": "",
+    "noProxy": "",
+    "certificateFilePath": ""
+  }
+}
