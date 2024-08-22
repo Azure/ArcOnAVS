@@ -19,10 +19,10 @@ class ApplianceSetup(object):
     _key_map: dict = {
         'vmware-appliance': {
             'applianceControlPlaneIpAddress': 'applianceClusterConfig.controlPlaneEndpoint',
-            'proxyDetails.http': 'applianceClusterConfig.networking.proxy.http',
-            'proxyDetails.https': 'applianceClusterConfig.networking.proxy.https',
-            'proxyDetails.noProxy': 'applianceClusterConfig.networking.proxy.noproxy',
-            'proxyDetails.certificateFilePath': 'applianceClusterConfig.networking.proxy.certificateFilePath'
+            'applianceProxyDetails.http': 'applianceClusterConfig.networking.proxy.http',
+            'applianceProxyDetails.https': 'applianceClusterConfig.networking.proxy.https',
+            'applianceProxyDetails.noProxy': 'applianceClusterConfig.networking.proxy.noproxy',
+            'applianceProxyDetails.certificateFilePath': 'applianceClusterConfig.networking.proxy.certificateFilePath'
         },
 
         'vmware-resource': {
@@ -98,13 +98,13 @@ class ApplianceSetup(object):
 
     def _copy_proxy_cert_update_config(self):
         config = self._config
-        if 'proxyDetails' in config and 'certificateFilePath' in config['proxyDetails']:
-            f: str = config['proxyDetails']['certificateFilePath']
+        if 'applianceProxyDetails' in config and 'certificateFilePath' in config['applianceProxyDetails']:
+            f: str = config['applianceProxyDetails']['certificateFilePath']
             if not os.path.exists(f):
                 raise FileExistsError(f'{f} does not exist.')
             copy(f, self._temp_dir)
             fp = Path(f)
-            config['proxyDetails']['certificateFilePath'] = fp.name
+            config['applianceProxyDetails']['certificateFilePath'] = fp.name
 
     def create(self):
         self._create_template_files()
@@ -330,9 +330,9 @@ class ApplianceSetup(object):
     def _delete_keys_if_empty(self):
         config = self._config
         try:
-            v = config['proxyDetails']['certificateFilePath']
+            v = config['applianceProxyDetails']['certificateFilePath']
             if str.strip(v) == "":
-                del config['proxyDetails']['certificateFilePath']
+                del config['applianceProxyDetails']['certificateFilePath']
         except KeyError:
             pass
 
