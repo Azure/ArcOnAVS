@@ -143,13 +143,13 @@ class ConfigValidator:
         segment_in_config = self.__config["staticIpNetworkDetails"]["networkForApplianceVM"]
         segment_cidr_in_config = self.__config["staticIpNetworkDetails"]["networkCIDRForApplianceVM"]
         for segment in res["value"]:
-            if segment["name"].casefold() == segment_in_config.casefold():
+            if segment["displayName"].casefold() == segment_in_config.casefold():
                 if segment["properties"]["subnet"]["gatewayAddress"] != segment_cidr_in_config:
                     raise InvalidInputError("Segment " + segment_in_config + " already exists with a different gateway ip cidr")
 
         for segment in res["value"]:
             if segment["properties"]["subnet"]["gatewayAddress"] == segment_cidr_in_config:
-                if segment["name"].casefold() != segment_in_config.casefold():
+                if segment["displayName"].casefold() != segment_in_config.casefold():
                     raise InvalidInputError("A different segment already present with gateway ip cidr " + segment_cidr_in_config)
      
     def validate_avs_config(self):
