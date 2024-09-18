@@ -29,7 +29,7 @@ class NSXSegmentHelper:
     def _get_arc_segment_if_exists(self, result, segment_name):
         list_segment = result["value"]
         for segment in list_segment:
-            if segment["name"].casefold() == segment_name.casefold():
+            if segment["properties"]["displayName"].casefold() == segment_name.casefold():
                 return segment
         return None
     
