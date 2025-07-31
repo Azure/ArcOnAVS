@@ -30,13 +30,7 @@ class AVSOrchestrator(Orchestrator):
             appliance_name = config['nameForApplianceInAzure']
         customer_res: CustomerResource = CustomerResource(config['resourceGroup'], config['subscriptionId'],
                                                           config['privateCloud'], appliance_name)
-        customer_details: CustomerDetails = self.data_collector.collect_data(customer_res)
-        if(config["applianceCredentials"]):
-            if(config["applianceCredentials"]["username"].strip() != "" or
-               config["applianceCredentials"]["password"].strip() != ""):
-                logging.info("Custom Credentials are provided in config file")
-                customer_details.vcenter_credentials.username = config["applianceCredentials"]["username"]
-                customer_details.vcenter_credentials.password = config["applianceCredentials"]["password"]
+        customer_details: CustomerDetails = self.data_collector.collect_data(customer_res, config)
         self.converter.convert_data(customer_details, config)
         return customer_details
 
