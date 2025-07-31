@@ -7,6 +7,10 @@
     "networkForApplianceVM": "",
     "networkCIDRForApplianceVM": ""
   },
+  "applianceCredentials": {
+    "username": "",
+    "password": ""
+  },
   "applianceProxyDetails": {
     "http": "",
     "https": "",
