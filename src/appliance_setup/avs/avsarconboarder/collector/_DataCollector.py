@@ -42,11 +42,11 @@ class DataCollector(Collector):
                              f"Using username: {config['applianceCredentials']['username']}.")
                 customer_credentials = Credentials(username=config['applianceCredentials']['username'],
                                    password=config['applianceCredentials']['password'])
-        else:
-            logging.info("Custom Credentials are not provided in config file. "
-                     "Using cloudAdmin for vCenter.")
-            customer_credentials = self.credentials_retriever.retrieve_data(customer_res)
-
+                return customer_credentials
+            
+        logging.info("Custom Credentials are not provided in config file. "
+                    "Using cloudAdmin for vCenter.")
+        customer_credentials = self.credentials_retriever.retrieve_data(customer_res)
         return customer_credentials
         
     def _collect_customer_cloud_data(self, customer_res):
