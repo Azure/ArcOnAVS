@@ -39,13 +39,13 @@ class DataCollector(Collector):
             if(config["applianceCredentials"]["username"].strip() != "" or
                config["applianceCredentials"]["password"].strip() != ""):
                 logging.info(f"Custom Credentials are provided in config file. "
-                             f"Using username: {config['applianceCredentials']['username']}.")
+                             f"Using username: {config['applianceCredentials']['username']} for Onboarding Arc appliance.")
                 customer_credentials = Credentials(username=config['applianceCredentials']['username'],
                                    password=config['applianceCredentials']['password'])
                 return customer_credentials
             
         logging.info("Custom Credentials are not provided in config file. "
-                    "Using cloudAdmin for vCenter.")
+                    "Using cloudadmin user account for Onboarding Arc appliance.")
         customer_credentials = self.credentials_retriever.retrieve_data(customer_res)
         return customer_credentials
         
