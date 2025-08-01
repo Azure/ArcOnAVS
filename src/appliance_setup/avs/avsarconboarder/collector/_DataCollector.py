@@ -36,7 +36,7 @@ class DataCollector(Collector):
 
     def _collect_customer_credentials(self, customer_res, config):
         if(config["applianceCredentials"]):
-            if(config["applianceCredentials"]["username"].strip() != "" or
+            if(config["applianceCredentials"]["username"].strip() != "" and
                config["applianceCredentials"]["password"].strip() != ""):
                 logging.info(f"Custom Credentials are provided in config file. "
                              f"Using username: {config['applianceCredentials']['username']} for Onboarding Arc appliance.")
