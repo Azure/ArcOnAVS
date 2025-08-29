@@ -30,7 +30,7 @@ class AVSOrchestrator(Orchestrator):
             appliance_name = config['nameForApplianceInAzure']
         customer_res: CustomerResource = CustomerResource(config['resourceGroup'], config['subscriptionId'],
                                                           config['privateCloud'], appliance_name)
-        customer_details: CustomerDetails = self.data_collector.collect_data(customer_res)
+        customer_details: CustomerDetails = self.data_collector.collect_data(customer_res, config)
         self.converter.convert_data(customer_details, config)
         return customer_details
 

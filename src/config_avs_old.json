@@ -3,12 +3,28 @@
   "resourceGroup": "",
   "applianceControlPlaneIpAddress": "",
   "privateCloud": "",
-    "isStatic": true,
-    "staticIpNetworkDetails": {
-      "networkForApplianceVM": "",
-      "networkCIDRForApplianceVM": "",
-      "k8sNodeIPPoolStart": "",
-      "k8sNodeIPPoolEnd": "",
-      "gatewayIPAddress": ""
-    }
+  "isStatic": true,
+  "staticIpNetworkDetails": {
+    "networkForApplianceVM": "",
+    "networkCIDRForApplianceVM": "",
+    "k8sNodeIPPoolStart": "",
+    "k8sNodeIPPoolEnd": "",
+    "gatewayIPAddress": ""
+  },
+  "applianceCredentials": {
+    "username": "",
+    "password": ""
+  },
+  "applianceProxyDetails": {
+    "http": "",
+    "https": "",
+    "noProxy": "",
+    "certificateFilePath": ""
+  },
+  "managementProxyDetails": {
+    "http": "",
+    "https": "",
+    "noProxy": "",
+    "certificateFilePath": ""
+  }
 }
