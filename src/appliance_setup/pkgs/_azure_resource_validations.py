@@ -16,7 +16,7 @@ def _wait_until_appliance_is_in_running_state(config: dict):
         )
         if not err:
             res = json.loads(res)
-            state = res['status']
+            state = res['properties']['status']
             logging.info(f'Appliance is in {state} state.')
             return state
         logging.error('Get appliance operation failed.')
