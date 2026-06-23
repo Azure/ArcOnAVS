@@ -3,6 +3,11 @@ import logging
 import os
 import sys
 from datetime import datetime
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
 from avs._avs_orchestrator import AVSOrchestrator
 from avs.avsarconboarder.orchestrator.network._network_orchestrator import NetworkOrchestrator
 from avs.avsarconboarder.orchestrator.NSXOrchestrator._nsx_orchestrator import NSXOrchestor
