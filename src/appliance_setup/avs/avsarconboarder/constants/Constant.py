@@ -32,4 +32,4 @@ VNET_IP_CIDR = "VNET_IP_CIDR"
 DNS_SERVICE_IP = "DNS_Service_IP"
 CONFIG_VERSION_V1 = 0
 CONFIG_VERSION_V2 = 1
-VALID_LOCATIONS = "westeurope,eastus,australiaeast,canadacentral,uksouth,southeastasia,westus2,eastus2,northeurope,westus3,southcentralus,swedencentral,japaneast,eastasia,centralindia,northcentralus,ukwest,centralus,italynorth"
+VALID_LOCATIONS = "eastus,westeurope,uksouth,australiaeast,southeastasia,canadacentral,eastus2,westus2,westus3,southcentralus,northeurope,swedencentral,centralus,japaneast,eastasia,centralindia,ukwest,australiasoutheast,northcentralus,italynorth,germanywestcentral"
