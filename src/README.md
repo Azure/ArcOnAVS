@@ -55,3 +55,20 @@ From the management server you need to following ports open into the AVS Private
 ```
 
 To use the cloudadmin credentials the values must be empty on the ```applianceCredentials```.
+
+## Regions
+If your AVS region is not supported you can adjust the location as follow:
+
+|AVS Region|Recommended Region|Configuration|
+|----------|--------------------|-------------|
+|Switzerland North|West Europe|```"location": "westeurope"```|
+
+```json
+{
+  "subscriptionId": "",
+  "resourceGroup": "",
+  "privateCloud": "",
+  "location": "westeurope",
+  ...
+}
+```
