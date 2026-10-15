@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from datetime import timedelta
 
 from pkgs._utils import safe_escape_characters
 from ._az_cli import az_cli
@@ -31,7 +32,7 @@ class ArcVMwareResources(object):
 
         logging.info('Creating Custom Location...')
 
-        _wait_until_appliance_is_in_running_state(config)
+        _wait_until_appliance_is_in_running_state(config, timeout=timedelta(minutes=10))
 
         location = config['location']
         rg = config['resourceGroup']
@@ -77,7 +78,7 @@ class ArcVMwareResources(object):
 
         logging.info('Connecting vCenter...')
 
-        _wait_until_appliance_is_in_running_state(config)
+        _wait_until_appliance_is_in_running_state(config, timeout=timedelta(minutes=10))
         
         location = config['location']
         rg = config['resourceGroup']
