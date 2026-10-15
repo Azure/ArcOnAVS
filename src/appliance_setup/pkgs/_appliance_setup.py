@@ -1,4 +1,5 @@
 import json, yaml, requests
+from datetime import timedelta
 from xmlrpc.client import Boolean
 from tokenize import String
 from pathlib import Path
@@ -266,7 +267,7 @@ class ApplianceSetup(object):
 
             logging.info('Creating VMware extension...')
 
-            _wait_until_appliance_is_in_running_state(config)
+            _wait_until_appliance_is_in_running_state(config, timeout=timedelta(minutes=120))
 
             res, err = az_cli('k8s-extension', 'create',
                               '-n', name,
